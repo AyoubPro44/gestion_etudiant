@@ -1,0 +1,1 @@
+export const SERVERPOINT = 'http://localhost:5000';
