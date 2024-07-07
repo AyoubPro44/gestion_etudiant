@@ -21,7 +21,7 @@ function EtudiantForm() {
         }
         await createUser(etudiant);
         await userLogin(etudiant.email, etudiant.password);
-        // navigate('/acceuil');
+        navigate('/acceuil');
     }
 
     const { data: filieres, isLoading, error } = useQuery({

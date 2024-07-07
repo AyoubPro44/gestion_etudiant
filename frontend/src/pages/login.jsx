@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { userLogin } from '../services/authentification';
+import React, { useEffect, useState } from 'react';
+import { logout, userLogin } from '../services/authentification';
 import { useNavigate, Link } from 'react-router-dom';
 
 const Login = () => {
@@ -19,6 +19,10 @@ const Login = () => {
         }
     };
 
+    useEffect(() => {
+        logout();
+    }, [])
+
     return (
         <div className="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -28,7 +32,7 @@ const Login = () => {
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white py-6 px-4 shadow sm:rounded-lg sm:px-10">
                     <form className="space-y-6" onSubmit={handleLogin}>
-                    {errorLogin && (
+                        {errorLogin && (
                             <p className="text-red-500 text-sm">Invalid email or password. Please try again.</p>
                         )}
                         <div>

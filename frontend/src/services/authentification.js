@@ -5,14 +5,14 @@ export const userLogin = async (email, password) => {
     try {
         const response = await axios.post(SERVERPOINT + '/api/users/login/', { email, password }, { withCredentials: true });
         if (response.status === 200) {
-            localStorage.clear();
+            localStorage.setItem('auth', true)
             localStorage.setItem('id_user', response.data.user.ID_USER);
             localStorage.setItem('firstname', response.data.user.FIRSTNAME);
             localStorage.setItem('lastname', response.data.user.LASTNAME);
             localStorage.setItem('email', response.data.user.EMAIL);
             localStorage.setItem('role', response.data.user.ROLE);
             localStorage.setItem('token', response.data.token);
-            if(response.data.user.ROLE === "etudiant") {
+            if (response.data.user.ROLE === "etudiant") {
                 localStorage.setItem('id_etudiant', response.data.user.etudiant.ID_ETUDIANT);
                 localStorage.setItem('id_filiere', response.data.user.etudiant.ID_FILIERE);
                 localStorage.setItem('num_etudiant', response.data.user.etudiant.NUM_ETUDIANT);
@@ -21,20 +21,20 @@ export const userLogin = async (email, password) => {
                 localStorage.setItem('semestre', response.data.user.etudiant.SEMESTRE);
                 localStorage.setItem('id_parent', response.data.user.etudiant.ID_PARENT);
             }
-            else if(response.data.user.ROLE === "professeur") {
+            else if (response.data.user.ROLE === "professeur") {
                 localStorage.setItem('id_prof', response.data.user.ID_PROF);
                 localStorage.setItem('num_bureau', response.data.user.num_bureau)
             }
-            else if(response.data.user.ROLE === "parent") {
+            else if (response.data.user.ROLE === "parent") {
                 localStorage.setItem('id_parent', response.data.user.ID_PARENT)
             }
-            else if(response.data.user.ROLE === "admin") {
+            else if (response.data.user.ROLE === "admin") {
                 localStorage.setItem('id_admin', response.data.user.ID_ADMIN)
             }
         }
     } catch (error) {
         throw error;
-     }
+    }
 }
 
 export const getTokenSignUp = async () => {
@@ -93,7 +93,7 @@ export const hasParent = async (numEtudiant) => {
             withCredentials: true,
         };
         const response = await axios.post(SERVERPOINT + '/api/etudiants/hasParent', { numEtudiant }, config);
-        if (response.status === 200){
+        if (response.status === 200) {
             return response.data.isHasParent;
         }
     } catch (error) {
@@ -105,6 +105,26 @@ export const createUser = async (user) => {
     try {
         const response = await axios.post(SERVERPOINT + '/api/users/createUser', { user }, { withCredentials: true });
     } catch (error) {
-        
+
     }
+}
+
+export const logout = () => {
+    localStorage.removeItem('auth');
+    localStorage.removeItem('id_user');
+    localStorage.removeItem('firstname');
+    localStorage.removeItem('lastname');
+    localStorage.removeItem('email');
+    localStorage.removeItem('role');
+    localStorage.removeItem('token');
+    localStorage.removeItem('id_etudiant');
+    localStorage.removeItem('id_filiere');
+    localStorage.removeItem('num_etudiant');
+    localStorage.removeItem('date_naissance');
+    localStorage.removeItem('adresse');
+    localStorage.removeItem('semestre');
+    localStorage.removeItem('id_parent');
+    localStorage.removeItem('id_prof');
+    localStorage.removeItem('num_bureau');
+    localStorage.removeItem('id_admin');
 }

@@ -12,12 +12,14 @@ const getProfByUserId = async (userId) => {
 }
 
 const getProfCourses = async (profId) => {
-    return db.query(`select nom_sous_module, nom_module, nom_filiere, semestre from enseigne e, sous_module sm, module m, filiere_module fm, filiere f 
+    return db.query(`select sm.id_sous_module, nom_sous_module, nom_module, nom_filiere, f.id_filiere, m.semestre, count(id_etudiant) as nb_etudiant from enseigne e, sous_module sm, module m, filiere f, etudiant et
                     where e.ID_SOUS_MODULE = sm.ID_SOUS_MODULE 
                     and sm.ID_MODULE = m.ID_MODULE 
-                    and m.ID_MODULE = fm.ID_MODULE 
-                    and fm.ID_FILIERE = f.ID_FILIERE 
-                    and e.ID_PROFESSEUR = ?`, [profId]);
+                    and m.ID_FILIERE = f.ID_FILIERE 
+                    and et.ID_FILIERE = f.ID_FILIERE
+                    and m.SEMESTRE = et.SEMESTRE
+                    and e.ID_PROFESSEUR = ?
+                    group by sm.id_sous_module, m.ID_MODULE, m.SEMESTRE;`, [profId]);
 }
 
 module.exports = { createProfesseur, getProfByUserId, getProfCourses };

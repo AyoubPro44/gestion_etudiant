@@ -29,6 +29,29 @@ class EtudiantController {
     }
   }
 
+  async getAllEtudiantsByFiliere(req, res) {
+    try {
+      const { id_filiere, semestre } = req.params;
+      const [etudiants] = await Etudiant.getEtudiantsByFiliere(id_filiere, semestre)
+      if(etudiants.length == 0)
+        return res.status(404).json({ error: 'No Etudiant Found' });
+      return res.status(200).json({ etudiants: etudiants})
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+
+  async getAllEtudiantsWithNotes(req, res) {
+    try {
+      const { id_sous_module, id_filiere, semestre } = req.body;
+      const [etudiants] = await Etudiant.getEtudiantsWithNotes(id_sous_module, id_filiere, semestre)
+      if(etudiants.length == 0)
+        return res.status(404).json({ error: 'No Etudiant Found' });
+      return res.status(200).json({ etudiants: etudiants})
+    } catch (error) {
+      return res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
 }
 
 module.exports = new EtudiantController();

@@ -8,11 +8,18 @@ import {
   FaUser,
   FaKey,
   FaSignOutAlt,
-  FaFileAlt 
+  FaFileAlt
 } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { logout } from '../services/authentification';
 
 const SideBar = () => {
+  const navigate = useNavigate()
+
+  const logoutFromPage = () => {
+    logout()
+    navigate('/')
+  }
   return (
     <div className="top-0 left-0 h-[100vh] w-fit bg-white shadow-md flex flex-col p-4 sticky">
       <div className="flex items-center space-x-4 p-2 mb-5">
@@ -40,7 +47,7 @@ const SideBar = () => {
           <FaChalkboard className="mr-4" />
           <span>Classes</span>
         </Link>
-        <Link to="/grades" className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
+        <Link to="/professeur/grades" className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
           <FaGraduationCap className="mr-4" />
           <span>Grades</span>
         </Link>
@@ -53,13 +60,13 @@ const SideBar = () => {
           <span>Change Password</span>
         </Link>
         <Link to="/settings" className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
-          <FaFileAlt  className="mr-4" />
+          <FaFileAlt className="mr-4" />
           <span>Repport</span>
         </Link>
-        <Link to="/logout" className="p-2 text-red-500 hover:text-red-600 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
+        <span onClick={logoutFromPage} className="p-2 cursor-pointer text-red-500 hover:text-red-600 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
           <FaSignOutAlt className="mr-4" />
           <span>Logout</span>
-        </Link>
+        </span>
       </nav>
     </div>
   );

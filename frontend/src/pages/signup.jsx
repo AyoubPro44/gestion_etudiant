@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ParentForm from '../components/signup/parentForm';
 import AdminForm from '../components/signup/adminForm';
 import ProfForm from '../components/signup/profForm';
 import EtudiantForm from '../components/signup/etudiantForm';
+import { logout } from '../services/authentification';
 
 const SignUp = () => {
     const [userType, setUserType] = useState('etudiant');
@@ -13,6 +14,10 @@ const SignUp = () => {
         e.preventDefault();
         navigate('/' + localStorage.getItem('role'));
     };
+
+    useEffect(() => {
+        logout();
+    }, [])
 
     const renderForm = () => {
         switch (userType) {

@@ -1,7 +1,6 @@
 const User = require('../models/userModel');
 const Etudiant = require('../models/etudiantModel');
 const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
 const Prof = require('../models/profModel');
 const Parent = require('../models/parentModel');
 const Admin = require('../models/adminModel');
@@ -30,24 +29,21 @@ class UserController {
 
   async login(req, res) {
     try {
-      
       const { email, password } = req.body;
-  
+
       const [users] = await User.getUserByEmail(email);
       const user = users[0];
-  
+
       if (!user) {
         return res.status(404).json({ message: 'User not found' });
       }
 
-      
-      const isPasswordValid = await bcrypt.compare(password, user.PASSWORD);
-      
-      if (!isPasswordValid) {
+      if (password !== user.PASSWORD) { // Replace with direct comparison
         return res.status(401).json({ message: 'Invalid credentials' });
       }
-      
+
       const token = jwt.sign({ userId: user.ID_USER, email: user.EMAIL }, 'key');
+
       if(user.ROLE == "etudiant") {
         const [ etudiants ] = await Etudiant.getEtudiantByUserId(user.ID_USER);
         user.etudiant = etudiants[0]
@@ -66,12 +62,14 @@ class UserController {
         user.num_bureau = profs[0].NUM_BUREAU
       }
       
+
       return res.status(200).json({ user, token });
     } catch (error) {
       console.error('Error logging in:', error);
       return res.status(500).json({ error: 'Internal Server Error' });
     }
   }
+
   
   async checkEmail(req, res) {
     try {
@@ -91,7 +89,6 @@ class UserController {
       const { user } = req.body;
 
       const newUserId = await User.createUser(user);
-      console.log(newUserId)
       if(user.role == "etudiant")
         Etudiant.createEtudiant(user.adresse, user.filiere, user.dateNaissance, user.numEtudiant, newUserId)
       else if(user.role == "professeur")

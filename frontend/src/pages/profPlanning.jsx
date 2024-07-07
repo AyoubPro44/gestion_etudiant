@@ -1,16 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaCalendarAlt } from 'react-icons/fa';
 import schedule from '../assets/images/schedule.png';
 import { useQuery } from '@tanstack/react-query';
 import { getProfCourses } from '../services/profServices'
-
-
-const filieresData = [
-  { filiere: 'Computer Science', module: 'Algorithms', sousModule: 'Graph Theory', semester: 'Fall 2024' },
-  { filiere: 'Engineering', module: 'Physics', sousModule: 'Electromagnetism', semester: 'Spring 2024' },
-  { filiere: 'Mathematics', module: 'Calculus', sousModule: 'Differential Equations', semester: 'Fall 2024' },
-  // Add more data as needed
-];
+import { logout } from '../services/authentification';
+import { useNavigate } from 'react-router-dom';
 
 const ProfPlanning = () => {
 
@@ -20,6 +14,14 @@ const ProfPlanning = () => {
       return getProfCourses(localStorage.getItem("id_prof"))
     }
   })
+
+  const navigate = useNavigate()
+  useEffect(() => {
+    if(!localStorage.getItem('auth') || localStorage.getItem('role') != "professeur") {
+      logout();
+      navigate('/');
+    }
+  },[])
 
   return (
     <div className="bg-gray-100 py-12 px-4 h-full">

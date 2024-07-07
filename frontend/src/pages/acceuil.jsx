@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { FaRegNewspaper } from 'react-icons/fa'; // Example of using react-icons for icons
 import PostCard from '../components/postCard';
+import { logout } from '../services/authentification';
+import { useNavigate } from 'react-router-dom';
 
 function Acceuil() {
   const news = [
@@ -23,6 +25,15 @@ function Acceuil() {
       date: "June 25, 2024"
     }
   ];
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if(!localStorage.getItem('auth')) {
+      logout();
+      navigate('/');
+    }
+  },[])
+  
   return (
     <div className="bg-gray-100 py-12 px-4 h-full">
       <div className="container mx-auto px-4">
