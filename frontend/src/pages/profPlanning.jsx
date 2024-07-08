@@ -24,7 +24,7 @@ const ProfPlanning = () => {
   },[])
 
   return (
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto p-8">
         <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
           <FaCalendarAlt className="mr-4 text-indigo-500" />
           My Schedule

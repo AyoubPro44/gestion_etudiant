@@ -149,7 +149,7 @@ function ProfProfile() {
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-10 p-6">
             <div className="bg-white shadow-md rounded-lg p-8 mx-6">
                 <h2 className="text-2xl font-bold mb-6 text-left flex items-center gap-4">
                     <FaUser size={22} />

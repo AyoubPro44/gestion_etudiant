@@ -35,7 +35,7 @@ function GradesEntry() {
     };
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto p-8">
             <Select
                 label="Select class"
                 placeholder="choose one"

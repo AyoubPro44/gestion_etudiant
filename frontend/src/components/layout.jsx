@@ -6,7 +6,7 @@ const Layout = ({ children }) => {
     <div className="flex h-screen"> {/* Ensure full height layout */}
       <Sidebar />
       <div className="flex-1 overflow-y-auto bg-gray-100"> {/* Allow main content to scroll */}
-        <div className="p-6">
+        <div className="">
           {children}
         </div>
       </div>

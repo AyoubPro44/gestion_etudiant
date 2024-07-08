@@ -51,6 +51,11 @@ const getProfEnseignements = async (id_prof) => {
     return db.query(`SELECT id_sous_module FROM enseigne WHERE id_professeur = ?`, [id_prof]);
 }
 
+const saveReport = async (id_porf, report_content) => {
+    return db.query(`INSERT INTO report (ID_PROFESSEUR, report_content, date_report)
+                    VALUES (?, ?, CURRENT_DATE)`, [id_porf, report_content])
+}
+
 module.exports = { 
     createProfesseur, 
     getProfByUserId, 
@@ -60,5 +65,6 @@ module.exports = {
     removeEnsignement,
     addEnseignement,
     removeProfEnseignements,
-    getProfEnseignements
+    getProfEnseignements,
+    saveReport
 };

@@ -61,3 +61,19 @@ export const getProfEnseignements = async (id_prof) => {
         throw error;
     }
 }
+
+export const saveReport = async (id_prof, report_content) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.post(SERVERPOINT + '/api/professeur/saveReport', { id_prof, report_content }, config);
+        return response.status
+    } catch (error) {
+        throw error;
+    }
+}

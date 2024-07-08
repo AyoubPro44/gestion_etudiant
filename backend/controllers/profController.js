@@ -39,6 +39,16 @@ class ProfController {
             return res.status(500).json({ error: error.message });
         }
     }
+
+    async insertReport(req, res) {
+        try {
+            const { id_prof, report_content } = req.body
+            await Prof.saveReport(id_prof, report_content)
+            return res.status(200).json({ message: 'report saved successfully' })
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new ProfController();

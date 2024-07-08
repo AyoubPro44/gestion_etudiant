@@ -35,7 +35,7 @@ function Acceuil() {
   },[])
   
   return (
-    <div className="py-12">
+    <div className="py-12 p-6">
       <div className="container mx-auto px-4">
         <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
           <FaRegNewspaper className="mr-4 text-indigo-500" />

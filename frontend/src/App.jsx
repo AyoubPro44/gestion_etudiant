@@ -11,6 +11,7 @@ import ProfClasses from './pages/profClasses'
 import EtudiantList from './pages/etudiantList'
 import GradesEntry from './pages/gradesEntry'
 import ProfProfile from './pages/profProfile'
+import ProfReport from './pages/profReport'
 
 function App() {
   const client = new QueryClient()
@@ -28,6 +29,7 @@ function App() {
             <Route path='/professeur/classes/:id_filiere/:semestre' element={<Layout><EtudiantList /></Layout>} />
             <Route path='/professeur/grades' element={<Layout><GradesEntry /></Layout>} />
             <Route path='/professeur/profile' element={<Layout><ProfProfile /></Layout>} />
+            <Route path='/professeur/report' element={<Layout><ProfReport /></Layout>} />
             <Route path='/etudiant' element={<div>etudiant</div>} />
             <Route path='/parent' element={<div>parent</div>} />
             <Route path='/admin' element={<div>administrateur</div>} />

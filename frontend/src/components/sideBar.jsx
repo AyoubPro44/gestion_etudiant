@@ -20,7 +20,7 @@ const links = [
   { to: "/professeur/classes", icon: <FaChalkboard className="mr-4" />, label: "Classes" },
   { to: "/professeur/grades", icon: <FaGraduationCap className="mr-4" />, label: "Grades" },
   { to: "/professeur/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
-  { to: "/settings", icon: <FaFileAlt className="mr-4" />, label: "Report" },
+  { to: "/professeur/report", icon: <FaFileAlt className="mr-4" />, label: "Report" },
 ];
 
 const SideBar = () => {
