@@ -4,5 +4,7 @@ const ProfController = require('../controllers/ProfController');
 const verifyToken = require('../middlewares/verifyToken'); 
 
 router.post('/getProfCourses', verifyToken, ProfController.getCourses);
+router.post('/updateProfInfos', verifyToken, ProfController.updateProfInfos);
+router.post('/profEnseignements', verifyToken, ProfController.getProfEnseignements);
 
 module.exports = router;

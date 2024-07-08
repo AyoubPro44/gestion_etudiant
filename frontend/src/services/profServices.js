@@ -11,8 +11,51 @@ export const getProfCourses = async (id_prof) => {
             withCredentials: true,
         };
         const response = await axios.post(SERVERPOINT + '/api/professeur/getProfCourses', { id_prof }, config);
-        if(response.status === 200) {
+        if (response.status === 200) {
             return response.data.courses;
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const updateProfInfos = async (prof) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.post(SERVERPOINT + '/api/professeur/updateProfInfos', { prof }, config);
+        if (response.status === 200) {
+            localStorage.setItem('firstname', prof.firstname);
+            localStorage.setItem('lastname', prof.lastname);
+            localStorage.setItem('email', prof.email);
+            localStorage.setItem('num_bureau', prof.num_bureau);
+            window.dispatchEvent(new Event('storage')); 
+
+            return response.data.message;
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+
+export const getProfEnseignements = async (id_prof) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.post(SERVERPOINT + '/api/professeur/profEnseignements', { id_prof }, config);
+        if (response.status === 200) {
+            return response.data.enseignements;
         }
     } catch (error) {
         throw error;

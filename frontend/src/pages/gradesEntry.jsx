@@ -35,28 +35,26 @@ function GradesEntry() {
     };
 
     return (
-        <div className="bg-gray-100 py-12 px-4 h-full">
-            <div className="container mx-auto px-4">
-                <Select
-                    label="Select class"
-                    placeholder="choose one"
-                    onSelectionChange={handleSelectionChange}
-                    className="light border w-72 ring-indigo-500 rounded-lg shadow-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900"
-                >
-                    {
-                        classes?.map((classe) => (
-                            <SelectItem key={classe.id_sous_module}>
-                                {classe.nom_sous_module}
-                            </SelectItem>
-                        ))
-                    }
-                </Select>
-                {selectedClass.id_sous_module != 0 && (
-                    <GrandeEntryTable
-                        classe={selectedClass}
-                    />
-                )}
-            </div>
+        <div className="container mx-auto px-4">
+            <Select
+                label="Select class"
+                placeholder="choose one"
+                onSelectionChange={handleSelectionChange}
+                className="light border w-72 ring-indigo-500 rounded-lg shadow-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-gray-900"
+            >
+                {
+                    classes?.map((classe) => (
+                        <SelectItem key={classe.id_sous_module}>
+                            {classe.nom_sous_module}
+                        </SelectItem>
+                    ))
+                }
+            </Select>
+            {selectedClass.id_sous_module != 0 && (
+                <GrandeEntryTable
+                    classe={selectedClass}
+                />
+            )}
         </div>
     );
 }

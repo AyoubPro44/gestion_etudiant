@@ -22,4 +22,43 @@ const getProfCourses = async (profId) => {
                     group by sm.id_sous_module, m.ID_MODULE, m.SEMESTRE;`, [profId]);
 }
 
-module.exports = { createProfesseur, getProfByUserId, getProfCourses };
+const updateInfos = async (id_prof, num_bureau) => {
+    return db.query(`UPDATE professeur SET num_bureau = ?
+                    WHERE id_professeur = ?                
+                    `, [num_bureau,id_prof]);
+}
+
+const isProfEnseignModule = async (id_prof, id_sous_module) => {
+    return db.query(`SELECT * FROM enseigne 
+                    WHERE id_professeur = ? and id_sous_module = ?`, [id_prof, id_sous_module]);
+}
+
+const removeEnsignement = async (id_prof, id_sous_module) => {
+    return db.query(`DELETE FROM enseigne WHERE id_professeur = ? and id_sous_module = ?`
+                    [id_prof, id_sous_module])
+}
+
+const addEnseignement = async (id_prof, id_sous_module) => {
+    return db.query(`INSERT INTO enseigne (id_professeur, id_sous_module) VALUES (?, ?)`, 
+                    [id_prof, id_sous_module])
+}
+
+const removeProfEnseignements = async (id_prof) => {
+    return db.query(`DELETE FROM enseigne WHERE id_professeur = ?`, [id_prof])
+}
+
+const getProfEnseignements = async (id_prof) => {
+    return db.query(`SELECT id_sous_module FROM enseigne WHERE id_professeur = ?`, [id_prof]);
+}
+
+module.exports = { 
+    createProfesseur, 
+    getProfByUserId, 
+    getProfCourses, 
+    updateInfos, 
+    isProfEnseignModule,
+    removeEnsignement,
+    addEnseignement,
+    removeProfEnseignements,
+    getProfEnseignements
+};

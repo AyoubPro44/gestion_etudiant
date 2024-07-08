@@ -21,11 +21,37 @@ const getEtudiantsByFiliere = (id_filiere, semestre) => {
 }
 
 const getEtudiantsWithNotes = (id_sous_module, id_filiere, semestre) => {
-  return db.query(`SELECT e.id_etudiant, e.num_etudiant, u.FIRSTNAME, u.LASTNAME, n.note_exam, n.note_tp, n.note_cc, n.date
+  return db.query(`SELECT e.id_etudiant, e.num_etudiant, u.firstname, u.lastname, n.note_exam, n.note_tp, n.note_cc, n.date
                   FROM etudiant e
                   JOIN users u ON e.ID_USER = u.ID_USER
                   LEFT JOIN notes n ON e.ID_ETUDIANT = n.ID_ETUDIANT AND n.ID_SOUS_MODULE = ?
                   WHERE e.ID_FILIERE = ? AND e.SEMESTRE = ?;`, [id_sous_module, id_filiere, semestre])
 }
 
-module.exports = { createEtudiant, getEtudiantByNum, getEtudiantByUserId, getEtudiantsByFiliere, getEtudiantsWithNotes };
+
+const checkNote = (id_etudiant, id_sous_module) => {
+  return db.query(`SELECT * FROM notes WHERE id_etudiant = ?  and id_sous_module = ?;`, [id_etudiant, id_sous_module]);
+}
+
+
+const insertNote = (id_etudiant, id_sous_module, note_exam, note_tp, note_cc) => {
+  return db.query(`INSERT INTO notes (id_etudiant, id_sous_module, note_exam, note_tp, note_cc, date) VALUES (?, ?, ?, ?, ?, CURRENT_DATE)`, [id_etudiant, id_sous_module, note_exam, note_tp, note_cc])
+}
+
+const updateNote = (id_etudiant, id_sous_module, note_exam, note_tp, note_cc) => {
+  return db.query(`UPDATE notes SET note_exam = ?, note_tp = ?, note_cc = ?, date = CURRENT_DATE 
+                  where id_etudiant = ? and id_sous_module = ? `,
+    [note_exam, note_tp, note_cc, id_etudiant, id_sous_module])
+}
+
+
+module.exports = { 
+  createEtudiant, 
+  getEtudiantByNum, 
+  getEtudiantByUserId, 
+  getEtudiantsByFiliere, 
+  getEtudiantsWithNotes, 
+  checkNote, 
+  insertNote, 
+  updateNote 
+};

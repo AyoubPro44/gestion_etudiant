@@ -44,24 +44,24 @@ class UserController {
 
       const token = jwt.sign({ userId: user.ID_USER, email: user.EMAIL }, 'key');
 
-      if(user.ROLE == "etudiant") {
-        const [ etudiants ] = await Etudiant.getEtudiantByUserId(user.ID_USER);
+      if (user.ROLE == "etudiant") {
+        const [etudiants] = await Etudiant.getEtudiantByUserId(user.ID_USER);
         user.etudiant = etudiants[0]
       }
-      else if(user.ROLE == "parent") {
-        const [ parents ] = await Parent.getParentByUserId(user.ID_USER)
+      else if (user.ROLE == "parent") {
+        const [parents] = await Parent.getParentByUserId(user.ID_USER)
         user.ID_PARENT = parents[0].ID_PARENT;
       }
-      else if(user.ROLE == "admin") {
-        const [ admins ] = await Admin.getAdminByUserId(user.ID_USER)
+      else if (user.ROLE == "admin") {
+        const [admins] = await Admin.getAdminByUserId(user.ID_USER)
         user.ID_ADMIN = admins[0].ID_ADMINISTRATEUR;
       }
-      else if(user.ROLE == "professeur") {
-        const [ profs ] = await Prof.getProfByUserId(user.ID_USER)
+      else if (user.ROLE == "professeur") {
+        const [profs] = await Prof.getProfByUserId(user.ID_USER)
         user.ID_PROF = profs[0].ID_PROFESSEUR
         user.num_bureau = profs[0].NUM_BUREAU
       }
-      
+
 
       return res.status(200).json({ user, token });
     } catch (error) {
@@ -70,7 +70,6 @@ class UserController {
     }
   }
 
-  
   async checkEmail(req, res) {
     try {
       const { email } = req.body
@@ -89,18 +88,30 @@ class UserController {
       const { user } = req.body;
 
       const newUserId = await User.createUser(user);
-      if(user.role == "etudiant")
+      if (user.role == "etudiant")
         Etudiant.createEtudiant(user.adresse, user.filiere, user.dateNaissance, user.numEtudiant, newUserId)
-      else if(user.role == "professeur")
+      else if (user.role == "professeur")
         Prof.createProfesseur(user.numBureau, newUserId, user.sousModules);
-      else if(user.role == "parent")
+      else if (user.role == "parent")
         Parent.createParent(user.numEtudiant, newUserId);
-      else if(user.role == "admin")
+      else if (user.role == "admin")
         Admin.createAdmin(newUserId)
-      
+
       return res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
-      console.log(error);
+      return res.status(500).json({ error: 'Failed to create user' });
+    }
+  }
+
+  async updateUserPassword(req, res) {
+    try {
+      const { oldPassword, newPassword, id_user } = req.body;
+      const [user] = await User.checkPassword(id_user, oldPassword);
+      if (user.length == 0)
+        return res.status(204).json({ message: 'Old Password Incorrect' });
+      await User.updatePassword(id_user, newPassword);
+      return res.status(200).json({ message: 'Password updated successfully' });
+    } catch (error) {
       return res.status(500).json({ error: 'Failed to create user' });
     }
   }

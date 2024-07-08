@@ -7,5 +7,6 @@ router.post('/checkNumEtudiant', verifyToken, EtudiantController.checkNumEtudian
 router.post('/hasParent', verifyToken, EtudiantController.hasParent);
 router.get('/etudiantsByFiliere/:id_filiere/:semestre', verifyToken, EtudiantController.getAllEtudiantsByFiliere)
 router.post('/getEtudiantsWithNotes', verifyToken, EtudiantController.getAllEtudiantsWithNotes);
+router.post('/addEtudiantNote', verifyToken, EtudiantController.addEtudiantNote)
 
 module.exports = router;

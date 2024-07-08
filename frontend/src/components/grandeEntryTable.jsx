@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
 import {
   Table,
   TableHeader,
@@ -12,10 +12,13 @@ import {
 import { FaSearch } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from "@tanstack/react-query";
-import { getEtudiantsByFiliere } from '../services/etudiantServices';
 import { CSVLink } from 'react-csv';
 import { logout } from "../services/authentification";
+import { getEtudiantsWithNotes, insertEtudiantsNotes } from '../services/etudiantServices';
+import { FaSave } from "react-icons/fa";
+import { ToastContainer, toast, Bounce } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 const columns = [
   { name: "Numéro Étudiant", uid: "num_etudiant", sortable: true },
@@ -38,32 +41,66 @@ const headers = [
 ];
 
 export default function GrandeEntryTable(props) {
-  const [filterValue, setFilterValue] = React.useState("");
-  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-  const [sortDescriptor, setSortDescriptor] = React.useState({
+  const [etudiants, setEtudiants] = useState([]);
+  const [filterValue, setFilterValue] = useState("");
+  const [selectedKeys, setSelectedKeys] = useState(new Set([]));
+  const [sortDescriptor, setSortDescriptor] = useState({
     column: "num_etudiant",
     direction: "ascending",
   });
-  const [grades, setGrades] = React.useState({});
-
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "professeur") {
       logout();
       navigate('/');
+    } else {
+      fetchEtudiants();
     }
-  }, [navigate]);
+  }, [navigate, props.classe]);
 
-  const { data: etudiants = [], isLoading } = useQuery({
-    queryKey: ["etudiants", props.classe.id_filiere, props.classe.semestre],
-    queryFn: () => getEtudiantsByFiliere(props.classe.id_filiere, props.classe.semestre),
-    enabled: !!props.classe.id_filiere && !!props.classe.semestre,
-  });
+  const fetchEtudiants = async () => {
+    try {
+      const data = await getEtudiantsWithNotes(props.classe.id_sous_module, props.classe.id_filiere, props.classe.semestre);
+      // Compute total for each student
+      const studentsWithData = data.map(student => ({
+        ...student,
+        total: calculateTotal(student)
+      }));
+      setEtudiants(studentsWithData);
+    } catch (error) {
+      console.error('Error fetching students:', error);
+    }
+  };
+
+  const calculateTotal = useCallback((student) => {
+    if (student.note_exam === null || student.note_cc === null || student.note_tp === null)
+      return "----";
+    const note_exam = parseFloat(student.note_exam) || 0;
+    const note_tp = parseFloat(student.note_tp) || 0;
+    const note_cc = parseFloat(student.note_cc) || 0;
+    return (note_exam * 0.5 + note_tp * 0.25 + note_cc * 0.25).toFixed(2);
+  }, []);
+
+  const handleGradeChange = useCallback((studentId, columnKey, value) => {
+    setEtudiants((prevEtudiants) =>
+      prevEtudiants.map((student) => {
+        if (student.id_etudiant === studentId) {
+          const updatedStudent = {
+            ...student,
+            [columnKey]: parseFloat(value),
+          };
+          updatedStudent.total = calculateTotal(updatedStudent);
+          return updatedStudent;
+        }
+        return student;
+      })
+    );
+  }, [calculateTotal]);
 
   const hasSearchFilter = Boolean(filterValue);
 
-  const filteredItems = React.useMemo(() => {
+  const filteredItems = useMemo(() => {
     let filteredStudents = etudiants;
 
     if (hasSearchFilter) {
@@ -76,7 +113,7 @@ export default function GrandeEntryTable(props) {
     return filteredStudents;
   }, [etudiants, filterValue]);
 
-  const sortedItems = React.useMemo(() => {
+  const sortedItems = useMemo(() => {
     return filteredItems.sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
@@ -85,113 +122,120 @@ export default function GrandeEntryTable(props) {
     });
   }, [sortDescriptor, filteredItems]);
 
-  const handleGradeChange = (studentId, columnKey, value) => {
-    setGrades((prevGrades) => ({
-      ...prevGrades,
-      [studentId]: {
-        ...prevGrades[studentId],
-        [columnKey]: value,
-      },
-    }));
-  };
-
-  const renderCell = React.useCallback((student, columnKey) => {
-    if (columnKey === "note_exam" || columnKey === "note_tp" || columnKey === "note_cc" || columnKey === "total") {
+  const renderCell = useCallback((student, columnKey) => {
+    if (columnKey === "note_exam" || columnKey === "note_tp" || columnKey === "note_cc") {
       return (
         <input
-          type="text"
-          value={grades[student.num_etudiant]?.[columnKey] || ""}
-          onChange={(e) => handleGradeChange(student.num_etudiant, columnKey, e.target.value)}
+          type="number"
+          min={0}
+          placeholder="note"
+          className="border border-gray-300 rounded-md px-2 py-1 w-20"
+          value={student[columnKey]}
+          onChange={(e) => {
+            handleGradeChange(student.id_etudiant, columnKey, e.target.value);
+          }}
         />
       );
-    }
+    } 
     return student[columnKey];
-  }, [grades]);
+  }, [handleGradeChange, calculateTotal]);
 
-  const onSearchChange = React.useCallback((value) => {
-    if (value) {
-      setFilterValue(value);
-    } else {
-      setFilterValue("");
-    }
+  const onSearchChange = useCallback((value) => {
+    setFilterValue(value);
   }, []);
 
-  const onClear = React.useCallback(() => {
+  const onClear = useCallback(() => {
     setFilterValue("");
   }, []);
 
-  const topContent = React.useMemo(() => {
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex justify-between gap-3 items-end">
-          <Input
-            isClearable
-            className="w-full sm:max-w-[44%]"
-            placeholder="Search by name..."
-            startContent={<FaSearch />}
-            value={filterValue}
-            onClear={onClear}
-            onValueChange={onSearchChange}
-          />
-          <div className="flex gap-3">
-            <CSVLink
-              data={etudiants}
-              headers={headers}
-              filename={"etudiants.csv"}
-              className="flex items-center gap-2 btn btn-primary"
-            >
-              <Button color="primary" endContent={<LuDownload />}>
-                Download List
-              </Button>
-            </CSVLink>
-          </div>
+  const saveNotes = async () => {
+    try {
+      await insertEtudiantsNotes(etudiants, props.classe.id_sous_module);
+      toast.success('Grades Updates Successfuly', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        transition: Bounce,
+      });
+    }
+    catch (e) {
+      console.error(e);
+    }
+  }
+
+  const topContent = (
+    <div className="flex flex-col gap-4">
+      <div className="flex justify-between gap-3 items-end">
+        <Input
+          isClearable
+          className="w-full sm:max-w-[44%]"
+          placeholder="Search by name..."
+          startContent={<FaSearch />}
+          value={filterValue}
+          onClear={onClear}
+          onValueChange={onSearchChange}
+        />
+        <div className="flex gap-3">
+          <Button onClick={saveNotes} color="success" className="text-white" endContent={<FaSave />}>
+            Save
+          </Button>
+          <CSVLink
+            data={etudiants}
+            headers={headers}
+            filename={"etudiants.csv"}
+            className="flex items-center gap-2 btn btn-primary"
+          >
+            <Button color="primary" endContent={<LuDownload />}>
+              Download List
+            </Button>
+          </CSVLink>
         </div>
       </div>
-    );
-  }, [
-    filterValue,
-    etudiants?.length,
-    onSearchChange,
-    hasSearchFilter,
-  ]);
+    </div>
+  );
 
   return (
-    <div className="bg-gray-100 py-12 px-4 h-full">
-      <div className="container mx-auto px-4">
-        <Table
-          aria-label="Example table with custom cells and sorting"
-          isHeaderSticky
-          selectedKeys={selectedKeys}
-          sortDescriptor={sortDescriptor}
-          topContent={topContent}
-          topContentPlacement="outside"
-          onSelectionChange={setSelectedKeys}
-          onSortChange={setSortDescriptor}
-        >
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={"start"}
-                allowsSorting={column.sortable}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody emptyContent={"No students found"} items={sortedItems}>
-            {(item) => (
-              <TableRow key={item.num_etudiant}>
-                {(columnKey) => (
-                  <TableCell key={columnKey}>
-                    {renderCell(item, columnKey)}
-                  </TableCell>
-                )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+    <div>
+      <Table
+        aria-label="Example table with custom cells and sorting"
+        isHeaderSticky
+        selectedKeys={selectedKeys}
+        sortDescriptor={sortDescriptor}
+        topContent={topContent}
+        topContentPlacement="outside"
+        onSelectionChange={setSelectedKeys}
+        onSortChange={setSortDescriptor}
+        className="mt-10 w-full max-w-full"
+      >
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={"start"}
+              allowsSorting={column.sortable}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody emptyContent={"No students found"} items={sortedItems}>
+          {(item) => (
+            <TableRow key={item.num_etudiant}>
+              {(columnKey) => (
+                <TableCell key={columnKey}>
+                  {renderCell(item, columnKey)}
+                </TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+      <ToastContainer />
     </div>
   );
 }

@@ -22,4 +22,27 @@ const createUser = async (user) => {
   return result[0].insertId;
 };
 
-module.exports = { getAllUsers, getUserById, getUserByEmailPassword, getUserByEmail, createUser };
+const updateInfos = async (id_user, firstname, lastname, email) => {
+  return db.query(`UPDATE users SET firstname = ?, lastname = ?, email = ?
+                  WHERE id_user = ?                
+                  `, [firstname, lastname, email, id_user]);
+}
+
+const checkPassword = async (id_user, password) => {
+  return db.query(`SELECT * FROM users WHERE id_user = ? AND password = ?`, [id_user, password]);
+}
+
+const updatePassword = async (id_user, password) => {
+  return db.query(`UPDATE users SET password = ? WHERE id_user =?`, [password, id_user])
+}
+
+module.exports = { 
+  getAllUsers, 
+  getUserById, 
+  getUserByEmailPassword, 
+  getUserByEmail, 
+  createUser, 
+  updateInfos,
+  checkPassword,
+  updatePassword
+};
