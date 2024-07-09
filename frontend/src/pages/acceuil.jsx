@@ -3,6 +3,9 @@ import { FaRegNewspaper } from 'react-icons/fa'; // Example of using react-icons
 import PostCard from '../components/postCard';
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { getAllPosts } from '../services/postServices'
+
 
 function Acceuil() {
   const news = [
@@ -33,6 +36,13 @@ function Acceuil() {
       navigate('/');
     }
   },[])
+
+  const { data: posts, isLoading } = useQuery({
+    queryKey: ["posts"],
+    queryFn: () => {
+      return getAllPosts()
+    }
+  })
   
   return (
     <div className="py-12 p-6">
@@ -41,9 +51,8 @@ function Acceuil() {
           <FaRegNewspaper className="mr-4 text-indigo-500" />
           NOUVELLES ACTUALITÉS
         </h2>
-        {news.map((item) => (
-          <PostCard item={item}/>
-
+        {posts?.map((post) => (
+          <PostCard post={post}/>
         ))}
       </div>
     </div>

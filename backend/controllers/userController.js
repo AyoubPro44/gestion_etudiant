@@ -46,6 +46,8 @@ class UserController {
 
       if (user.ROLE == "etudiant") {
         const [etudiants] = await Etudiant.getEtudiantByUserId(user.ID_USER);
+        const [planning] = await Etudiant.getEtudiantPlanningName(etudiants[0].ID_FILIERE);
+        etudiants[0].planning= planning[0].planning
         user.etudiant = etudiants[0]
       }
       else if (user.ROLE == "parent") {
@@ -60,6 +62,7 @@ class UserController {
         const [profs] = await Prof.getProfByUserId(user.ID_USER)
         user.ID_PROF = profs[0].ID_PROFESSEUR
         user.num_bureau = profs[0].NUM_BUREAU
+        user.planning = profs[0].planning
       }
 
 

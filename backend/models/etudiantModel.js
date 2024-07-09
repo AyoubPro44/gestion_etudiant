@@ -8,6 +8,10 @@ const getEtudiantByUserId = (userId) => {
   return db.query('SELECT * FROM etudiant WHERE ID_USER = ?', [userId]);
 }
 
+const getEtudiantPlanningName = (id_filiere) => {
+  return db.query('Select planning from filiere where id_filiere = ?',[id_filiere])
+}
+
 const getEtudiantByNum = (numEtudiant) => {
   return db.query('SELECT * FROM etudiant WHERE NUM_ETUDIANT = ?', [numEtudiant]);
 }
@@ -53,5 +57,6 @@ module.exports = {
   getEtudiantsWithNotes, 
   checkNote, 
   insertNote, 
-  updateNote 
+  updateNote,
+  getEtudiantPlanningName
 };

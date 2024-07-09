@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Divider } from '@nextui-org/react';
 import {
   FaHome,
@@ -8,14 +8,13 @@ import {
   FaUser,
   FaKey,
   FaSignOutAlt,
-  FaFileAlt
+  FaFileAlt,
 } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/authentification';
 import useLocalStorage from '../hooks/useLocalStorage'
 
-const links = [
-  { to: "/acceuil", icon: <FaHome className="mr-4" />, label: "Accueil" },
+const ProfLinks = [
   { to: "/professeur/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My Planning" },
   { to: "/professeur/classes", icon: <FaChalkboard className="mr-4" />, label: "Classes" },
   { to: "/professeur/grades", icon: <FaGraduationCap className="mr-4" />, label: "Grades" },
@@ -23,9 +22,17 @@ const links = [
   { to: "/professeur/report", icon: <FaFileAlt className="mr-4" />, label: "Report" },
 ];
 
+const etudiantsLinks = [
+    { to: "/etudiant/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My planning" },
+    { to: "/etudiant/program", icon: <FaChalkboard className="mr-4" />, label: "Program" },
+    { to: "/etudiant/grades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
+    { to: "/etudiant/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
+  // { to: "/etudiant/report", icon: <FaFileAlt className="mr-4" />, label: "Report" },
+];
+
 const SideBar = () => {
   const navigate = useNavigate();
-
+  const [links, setLinks] = useState([])
   const [firstname] = useLocalStorage('firstname');
   const [lastname] = useLocalStorage('lastname');
   const [email] = useLocalStorage('email');
@@ -34,6 +41,14 @@ const SideBar = () => {
     logout();
     navigate('/');
   };
+
+  useEffect(() => {
+    const role = localStorage.getItem('role');
+    if (role == 'etudiant')
+      setLinks(etudiantsLinks);
+    else if (role == 'professeur')
+      setLinks(ProfLinks);
+  }, [])
 
   return (
     <div className="top-0 left-0 h-[100vh] w-fit bg-white shadow-md flex flex-col p-4 sticky">
@@ -50,6 +65,14 @@ const SideBar = () => {
       </div>
       <Divider />
       <nav className="flex flex-col space-y-2 mt-4">
+        <Link
+          key="/acceuil"
+          to="/acceuil"
+          className={`p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center ${location.pathname === "/acceuil" ? "bg-gray-100 text-indigo-500" : ""}`}
+        >
+          <FaHome className="mr-4" />
+          <span>Accueil</span>
+        </Link>
         {links.map(link => (
           <Link
             key={link.to}

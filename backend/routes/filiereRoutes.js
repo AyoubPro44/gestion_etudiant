@@ -4,5 +4,6 @@ const FiliereController = require('../controllers/FiliereController');
 const verifyToken = require('../middlewares/verifyToken'); 
 
 router.get('/getFilieres', verifyToken, FiliereController.getFilieres);
+router.post('/filiereProgram', verifyToken, FiliereController.getFiliereProgram)
 
 module.exports = router;

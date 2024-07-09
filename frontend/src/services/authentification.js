@@ -20,10 +20,12 @@ export const userLogin = async (email, password) => {
                 localStorage.setItem('adresse', response.data.user.etudiant.ADRESSE);
                 localStorage.setItem('semestre', response.data.user.etudiant.SEMESTRE);
                 localStorage.setItem('id_parent', response.data.user.etudiant.ID_PARENT);
+                localStorage.setItem('planning', response.data.user.etudiant.planning)
             }
             else if (response.data.user.ROLE === "professeur") {
                 localStorage.setItem('id_prof', response.data.user.ID_PROF);
-                localStorage.setItem('num_bureau', response.data.user.num_bureau)
+                localStorage.setItem('num_bureau', response.data.user.num_bureau)*
+                localStorage.setItem('planning', response.data.user.planning)
             }
             else if (response.data.user.ROLE === "parent") {
                 localStorage.setItem('id_parent', response.data.user.ID_PARENT)

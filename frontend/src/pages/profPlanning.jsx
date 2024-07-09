@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { FaCalendarAlt } from 'react-icons/fa';
-import schedule from '../assets/images/schedule.png';
 import { useQuery } from '@tanstack/react-query';
 import { getProfCourses } from '../services/profServices'
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
+import { SERVERPOINT } from '../const';
 
 const ProfPlanning = () => {
 
@@ -29,9 +29,8 @@ const ProfPlanning = () => {
           <FaCalendarAlt className="mr-4 text-indigo-500" />
           My Schedule
         </h2>
-
         <div className="bg-white rounded-lg overflow-hidden shadow-md mb-8">
-          <img className="w-full h-auto" src={schedule} alt="Schedule" />
+          <img className="w-full h-auto" src={`${SERVERPOINT}/secure-uploads/plannings/${localStorage.getItem('planning')}`} alt="Schedule" />
         </div>
 
         <h3 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h3>

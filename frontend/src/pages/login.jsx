@@ -12,7 +12,7 @@ const Login = () => {
         e.preventDefault();
         try {
             await userLogin(email, password);
-            navigate('/acceuil');
+            window.location.href = '/acceuil';
         } catch (error) {
             console.error('Login error:', error);
             setErrorLogin(true);

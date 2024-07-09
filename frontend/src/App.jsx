@@ -12,6 +12,10 @@ import EtudiantList from './pages/etudiantList'
 import GradesEntry from './pages/gradesEntry'
 import ProfProfile from './pages/profProfile'
 import ProfReport from './pages/profReport'
+import EtudiantPlanning from './pages/etudiantPlanning'
+import EtudiantProgram from './pages/etudiantProgram'
+import EtudiantGrades from './pages/etudiantGrades'
+import NotFoundPage from './pages/notFoundPage'
 
 function App() {
   const client = new QueryClient()
@@ -30,9 +34,12 @@ function App() {
             <Route path='/professeur/grades' element={<Layout><GradesEntry /></Layout>} />
             <Route path='/professeur/profile' element={<Layout><ProfProfile /></Layout>} />
             <Route path='/professeur/report' element={<Layout><ProfReport /></Layout>} />
-            <Route path='/etudiant' element={<div>etudiant</div>} />
+            <Route path='/etudiant/planning' element={<Layout><EtudiantPlanning /></Layout>} />
+            <Route path='/etudiant/program' element={<Layout><EtudiantProgram /></Layout>} />
+            <Route path='/etudiant/grades' element={<Layout><EtudiantGrades /></Layout>} />
             <Route path='/parent' element={<div>parent</div>} />
             <Route path='/admin' element={<div>administrateur</div>} />
+            <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>
       </QueryClientProvider>
