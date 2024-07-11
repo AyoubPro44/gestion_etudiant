@@ -16,7 +16,7 @@ class ProfController {
     async updateProfInfos(req, res) {
         try {
             const { prof } = req.body;
-            await User.updateInfos(prof.id_user, prof.firstname, prof.lastname, prof.email);
+           await User.updateInfos(prof.id_user, prof.firstname, prof.lastname, prof.email);
             await Prof.updateInfos(prof.id_prof, prof.num_bureau);
             await Prof.removeProfEnseignements(prof.id_prof);
             for (const id_sous_module of prof.sousModules) {
@@ -26,7 +26,7 @@ class ProfController {
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
-    }
+    } 
 
     async getProfEnseignements(req, res) {
         try {

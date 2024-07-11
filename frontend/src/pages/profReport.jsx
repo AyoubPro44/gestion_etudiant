@@ -8,6 +8,8 @@ function ProfReport() {
     const [reportContent, setReportContent] = useState('');
 
     const onSubmit = async () => {
+        if(reportContent == '')
+            return;
         try {
             const response = await saveReport(localStorage.getItem('id_prof'), reportContent);
             if (response === 200)
@@ -43,7 +45,7 @@ function ProfReport() {
                     />
                 </div>
                 <div className="mt-4">
-                    <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full flex items-center justify-center space-x-4">
+                    <button onClick={onSubmit} className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 w-full flex items-center justify-center space-x-4">
                         <FiSend />
                         <span>Send Report</span>
                     </button>

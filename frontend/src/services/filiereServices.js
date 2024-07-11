@@ -18,3 +18,21 @@ export const getFiliereProgram = async (id_filiere) => {
         throw error;
     }
 }
+
+export const getFiliereYears = async (id_filiere) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.get(SERVERPOINT + '/api/filieres/filiereYears/' + id_filiere, config);
+        if(response.status === 200) {
+            return response.data.years;
+        }
+    } catch (error) {
+        throw error;
+    }
+}

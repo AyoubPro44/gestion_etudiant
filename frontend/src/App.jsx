@@ -1,6 +1,5 @@
-import { useState } from 'react'
+import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-// import './App.css'
 import Login from './pages/login'
 import SignUp from './pages/signup'
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
@@ -16,6 +15,9 @@ import EtudiantPlanning from './pages/etudiantPlanning'
 import EtudiantProgram from './pages/etudiantProgram'
 import EtudiantGrades from './pages/etudiantGrades'
 import NotFoundPage from './pages/notFoundPage'
+import YearsChoosing from './pages/yearsChoosing'
+import EtudiantProfile from './pages/etudiantProfile'
+import ChooseEtudiant from './pages/chooseEtudiant'
 
 function App() {
   const client = new QueryClient()
@@ -36,8 +38,10 @@ function App() {
             <Route path='/professeur/report' element={<Layout><ProfReport /></Layout>} />
             <Route path='/etudiant/planning' element={<Layout><EtudiantPlanning /></Layout>} />
             <Route path='/etudiant/program' element={<Layout><EtudiantProgram /></Layout>} />
-            <Route path='/etudiant/grades' element={<Layout><EtudiantGrades /></Layout>} />
-            <Route path='/parent' element={<div>parent</div>} />
+            <Route path='/etudiant/grades' element={<Layout><YearsChoosing /></Layout>} />
+            <Route path='/etudiant/grades/:year' element={<Layout><EtudiantGrades /></Layout>} />
+            <Route path='/etudiant/profile' element={<Layout><EtudiantProfile /></Layout>} />
+            <Route path='/parent/chooseEtudiant' element={<ChooseEtudiant />} />
             <Route path='/admin' element={<div>administrateur</div>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>

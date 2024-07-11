@@ -9,7 +9,7 @@ const getEtudiantByUserId = (userId) => {
 }
 
 const getEtudiantPlanningName = (id_filiere) => {
-  return db.query('Select planning from filiere where id_filiere = ?',[id_filiere])
+  return db.query('Select planning from filiere where id_filiere = ?', [id_filiere])
 }
 
 const getEtudiantByNum = (numEtudiant) => {
@@ -48,15 +48,36 @@ const updateNote = (id_etudiant, id_sous_module, note_exam, note_tp, note_cc) =>
     [note_exam, note_tp, note_cc, id_etudiant, id_sous_module])
 }
 
+const getEtudiantNotes = async (id_etudiant, year) => {
+  return db.query(`
+              select m.semestre, m.id_module, m.nom_module, sm.id_sous_module, sm.nom_sous_module, 
+                     n.note_exam, n.note_tp, n.note_cc,
+                     FORMAT(note_exam * 0.5 + note_tp * 0.25 + note_cc * 0.25, 2) as total_sous_module, sm.COEFF
+              FROM notes n, sous_module sm, module m
+              WHERE 
+              n.ID_SOUS_MODULE = sm.ID_SOUS_MODULE 
+              and m.id_module = sm.ID_MODULE
+              and n.ID_ETUDIANT = ?
+              and m.SEMESTRE in (?, ?);
+              `, [id_etudiant, year * 2, (year * 2) - 1])
+}
 
-module.exports = { 
-  createEtudiant, 
-  getEtudiantByNum, 
-  getEtudiantByUserId, 
-  getEtudiantsByFiliere, 
-  getEtudiantsWithNotes, 
-  checkNote, 
-  insertNote, 
+const updateInfos = async (id_etudiant, adresse, dateNaissance, numEtudiant) => {
+  return db.query(`UPDATE etudiant SET NUM_ETUDIANT = ?, DATE_DE_NAISSANCE = ?, ADRESSE = ?
+                    WHERE id_etudiant = ?    
+                    `, [numEtudiant, dateNaissance, adresse, id_etudiant]);
+}
+
+module.exports = {
+  createEtudiant,
+  getEtudiantByNum,
+  getEtudiantByUserId,
+  getEtudiantsByFiliere,
+  getEtudiantsWithNotes,
+  checkNote,
+  insertNote,
   updateNote,
-  getEtudiantPlanningName
+  updateInfos,
+  getEtudiantPlanningName,
+  getEtudiantNotes
 };

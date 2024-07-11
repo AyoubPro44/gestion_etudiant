@@ -1,83 +1,39 @@
-import React, { useEffect, useState } from 'react';
-import { Select, SelectItem } from "@nextui-org/react";
-import { useQuery } from '@tanstack/react-query';
-import { getProfEnseignements, updateProfInfos } from '../services/profServices';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { checkEmail, logout } from '../services/authentification';
-import axios from 'axios';
-import { SERVERPOINT } from '../const';
+import { checkEmail, checkNumEtudiant, logout } from '../services/authentification';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { FaKey, FaUser } from "react-icons/fa";
-import { updateUserPassword } from '../services/userServices';
+import { FaUser } from "react-icons/fa";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer, toast, Bounce } from 'react-toastify';
 import ChangePasswordForm from '../components/changePasswordForm';
+import { formatDate } from '../services/functions'
+import { updateEtudiantInfos } from '../services/etudiantServices';
 
 function ProfProfile() {
     const navigate = useNavigate();
-    const [values, setValues] = useState(new Set([]));
-    const [profEnseignements, setProfEnseignements] = useState([]);
-    const [sousModulesError, setSousModulesError] = useState(false);
 
     const validationSchema = Yup.object().shape({
         firstname: Yup.string().required('First Name is required').min(2, 'First Name must be at least 2 characters'),
         lastname: Yup.string().required('Last Name is required').min(2, 'Last Name must be at least 2 characters'),
+        dateNaissance: Yup.date('Invalid Date').required('Date de Naissance is required').max(new Date(), 'Date de Naissance cannot be in the future'),
         email: Yup.string().email('Invalid email format').required('Email is required').test('email-exists', 'Email already exists', async function (email) {
             return email === localStorage.getItem('email') ? true : !(await checkEmail(email));
         }),
-        num_bureau: Yup.number().typeError('The number of office must be a valid number').required('The number of office is required').min(1, 'The number of office must be at least 1'),
-    });
-
-    
-
-    const { data: sousModules, isLoading, error } = useQuery({
-        queryKey: ["sousModules"],
-        queryFn: async () => {
-            try {
-                const config = {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                        'Content-Type': 'application/json'
-                    },
-                    withCredentials: true,
-                };
-
-                const response = await axios.get(SERVERPOINT + '/api/sousModule/getSousModuleFiliere', config);
-                return response.data.sousModules;
-            } catch (error) {
-                console.error('Error fetching sous Modules:', error);
-                throw error;
-            }
-        }
+        numEtudiant: Yup.string().required('N° d\'Etudiant is required').test('N° Etudiant exist', 'N° Etudiant already exists', async function (numEtudiant) {
+            return numEtudiant === localStorage.getItem('num_etudiant') ? true : !(await checkNumEtudiant(numEtudiant));
+        }),
+        adresse: Yup.string().required('Adresse is required'),
     });
 
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "professeur") {
+        if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "etudiant") {
             logout();
             navigate('/');
         }
-
-        const fetchProfEnseignements = async () => {
-            try {
-                const enseignements = await getProfEnseignements(localStorage.getItem("id_prof"));
-                setProfEnseignements(enseignements);
-                const initialValues = new Set(enseignements.map(enseignement => String(enseignement.id_sous_module)));
-                setValues(initialValues);
-
-            } catch (error) {
-                console.error('Error fetching professor enseignements:', error);
-            }
-        };
-
-        fetchProfEnseignements();
     }, [navigate]);
 
-    const handleSelectionChange = (selectedKeys) => {
-        setValues(new Set(selectedKeys));
-        setSousModulesError(false);
-    };
 
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(validationSchema),
@@ -86,15 +42,10 @@ function ProfProfile() {
 
 
     const onSubmit = async (data) => {
-        values.delete('');
-        if ([...values][0] === '' || values.size === 0) {
-            setSousModulesError(true);
-            return;
-        }
-        const sousModuleIds = Array.from(values).map(val => parseInt(val, 10));
-        const prof = { ...data, sousModules: sousModuleIds, id_user: localStorage.getItem('id_user'), id_prof: localStorage.getItem('id_prof') };
+        console.log(data);
+        const etudiant = { ...data, id_user: localStorage.getItem('id_user'), id_etudiant: localStorage.getItem('id_etudiant') };
         try {
-            await updateProfInfos(prof);
+            await updateEtudiantInfos(etudiant);
             toast.success('Your informations updated successfully', {
                 position: "top-right",
                 autoClose: 3000,
@@ -145,36 +96,50 @@ function ProfProfile() {
                             />
                             {errors.lastname && <p className="text-red-500 text-sm mt-1">{errors.lastname.message}</p>}
                         </div>
-                        <div className='w-[40%]'>
-                            <label htmlFor="num_bureau" className="block text-sm font-medium text-gray-700">N° Bureau</label>
-                            <input
-                                id="num_bureau"
-                                name="num_bureau"
-                                type="number"
-                                min="1"
-                                defaultValue={localStorage.getItem('num_bureau')}
-                                {...register('num_bureau')}
-                                className={`block w-full px-3 py-2 border ${errors.num_bureau ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
-                            />
-                            {errors.num_bureau && <p className="text-red-500 text-sm mt-1">{errors.num_bureau.message}</p>}
+                        <div className='w-full'>
+                            <label htmlFor="numEtudiant" className="block text-sm font-medium text-gray-700">N° Etudiant</label>
+                            <div className="mt-1">
+                                <input
+                                    id="numEtudiant"
+                                    name="numEtudiant"
+                                    type="text"
+                                    defaultValue={localStorage.getItem('num_etudiant')}
+                                    {...register('numEtudiant')}
+                                    className={`block w-full px-3 py-2 border ${errors.numEtudiant ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
+                                />
+                                {errors.numEtudiant && <p className="mt-2 text-sm text-red-600">{errors.numEtudiant.message}</p>}
+                            </div>
                         </div>
                     </div>
-
-                    <div>
-                        <Select
-                            label="Select sous module"
-                            selectionMode="multiple"
-                            selectedKeys={values}
-                            onSelectionChange={handleSelectionChange}
-                            placeholder="Choose at least one"
-                        >
-                            {sousModules && sousModules.map(sousModule => (
-                                <SelectItem key={sousModule.ID_SOUS_MODULE} value={String(sousModule.ID_SOUS_MODULE)}>
-                                    {sousModule.sous_module}
-                                </SelectItem>
-                            ))}
-                        </Select>
-                        {sousModulesError && <p className="mt-2 text-sm text-red-600">You must select at least one sous module</p>}
+                    <div className="flex md:flex-row flex-col gap-6">
+                        <div className='w-full'>
+                            <label htmlFor="adresse" className="block text-sm font-medium text-gray-700">Adresse</label>
+                            <div className="mt-1">
+                                <input
+                                    id="adresse"
+                                    name="adresse"
+                                    type="text"
+                                    defaultValue={localStorage.getItem('adresse')}
+                                    {...register('adresse')}
+                                    className={`block w-full px-3 py-2 border ${errors.adresse ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
+                                />
+                                {errors.adresse && <p className="mt-2 text-sm text-red-600">{errors.adresse.message}</p>}
+                            </div>
+                        </div>
+                        <div className='md:w-[50%]'>
+                            <label htmlFor="dateNaissance" className="block text-sm font-medium text-gray-700">Date de Naissance</label>
+                            <div className="mt-1">
+                                <input
+                                    id="dateNaissance"
+                                    name="dateNaissance"
+                                    type="date"
+                                    defaultValue={formatDate(localStorage.getItem('date_naissance'))}
+                                    {...register('dateNaissance')}
+                                    className={`block w-full px-3 py-2 border ${errors.dateNaissance ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
+                                />
+                                {errors.dateNaissance && <p className="mt-2 text-sm text-red-600">Invalid Date</p>}
+                            </div>
+                        </div>
                     </div>
 
                     <div>

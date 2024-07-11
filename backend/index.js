@@ -8,6 +8,7 @@ const sousModuleRoutes = require('./routes/sousModuleRoutes');
 const etudiantRoutes = require('./routes/etudiantRoutes');
 const profRoutes = require('./routes/profRoutes');
 const postRoutes = require('./routes/postRoutes');
+const parentRoutes = require('./routes/parentRoutes');
 const verifyToken = require('./middlewares/verifyToken'); 
 
 
@@ -26,6 +27,7 @@ app.use('/api/sousModule', sousModuleRoutes);
 app.use('/api/etudiants', etudiantRoutes);
 app.use('/api/professeur', profRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/parents', parentRoutes);
 
 const PORT = process.env.PORT || 5000;
 

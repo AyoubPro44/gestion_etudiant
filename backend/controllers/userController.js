@@ -47,7 +47,7 @@ class UserController {
       if (user.ROLE == "etudiant") {
         const [etudiants] = await Etudiant.getEtudiantByUserId(user.ID_USER);
         const [planning] = await Etudiant.getEtudiantPlanningName(etudiants[0].ID_FILIERE);
-        etudiants[0].planning= planning[0].planning
+        etudiants[0].planning = planning[0].planning
         user.etudiant = etudiants[0]
       }
       else if (user.ROLE == "parent") {
@@ -86,19 +86,32 @@ class UserController {
     }
   }
 
+  formatDate() {
+    console.log('eeeeeeeeeeeeeeeeeeeeeee')
+  };
+
   async createNewUser(req, res) {
     try {
       const { user } = req.body;
 
       const newUserId = await User.createUser(user);
-      if (user.role == "etudiant")
-        Etudiant.createEtudiant(user.adresse, user.filiere, user.dateNaissance, user.numEtudiant, newUserId)
+      if (user.role == "etudiant") {
+        const date = new Date(user.dateNaissance);
+        if (isNaN(date)) {
+          throw new Error('Invalid date');
+        }
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const formattedDate = year + '-' + month + '-' + day;
+        await Etudiant.createEtudiant(user.adresse, user.filiere, formattedDate, user.numEtudiant, newUserId);
+      }
       else if (user.role == "professeur")
-        Prof.createProfesseur(user.numBureau, newUserId, user.sousModules);
+        await Prof.createProfesseur(user.numBureau, newUserId, user.sousModules);
       else if (user.role == "parent")
-        Parent.createParent(user.numEtudiant, newUserId);
+        await Parent.createParent(user.numEtudiant, newUserId);
       else if (user.role == "admin")
-        Admin.createAdmin(newUserId)
+        await Admin.createAdmin(newUserId)
 
       return res.status(201).json({ message: 'User created successfully' });
     } catch (error) {

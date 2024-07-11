@@ -6,9 +6,9 @@ import {
   FaChalkboard,
   FaGraduationCap,
   FaUser,
-  FaKey,
   FaSignOutAlt,
   FaFileAlt,
+  FaEnvelope
 } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/authentification';
@@ -23,16 +23,15 @@ const ProfLinks = [
 ];
 
 const etudiantsLinks = [
-    { to: "/etudiant/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My planning" },
-    { to: "/etudiant/program", icon: <FaChalkboard className="mr-4" />, label: "Program" },
-    { to: "/etudiant/grades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
-    { to: "/etudiant/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
-  // { to: "/etudiant/report", icon: <FaFileAlt className="mr-4" />, label: "Report" },
+  { to: "/etudiant/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My planning" },
+  { to: "/etudiant/program", icon: <FaChalkboard className="mr-4" />, label: "Program" },
+  { to: "/etudiant/grades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
+  { to: "/etudiant/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
 ];
 
 const SideBar = () => {
   const navigate = useNavigate();
-  const [links, setLinks] = useState([])
+  const [links, setLinks] = useState([]);
   const [firstname] = useLocalStorage('firstname');
   const [lastname] = useLocalStorage('lastname');
   const [email] = useLocalStorage('email');
@@ -44,11 +43,9 @@ const SideBar = () => {
 
   useEffect(() => {
     const role = localStorage.getItem('role');
-    if (role == 'etudiant')
-      setLinks(etudiantsLinks);
-    else if (role == 'professeur')
-      setLinks(ProfLinks);
-  }, [])
+    if (role === 'etudiant') setLinks(etudiantsLinks);
+    else if (role === 'professeur') setLinks(ProfLinks);
+  }, []);
 
   return (
     <div className="top-0 left-0 h-[100vh] w-fit bg-white shadow-md flex flex-col p-4 sticky">
@@ -90,6 +87,16 @@ const SideBar = () => {
           <FaSignOutAlt className="mr-4" />
           <span>Logout</span>
         </span>
+
+        <Divider />
+        <div className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
+          <FaEnvelope className="mr-4" />
+          <div>
+            <span>Contact Us</span>
+            <a href="mailto:support@school.com" className="text-sm text-indigo-500 block">support@school.com</a>
+          </div>
+        </div>
+        
       </nav>
     </div>
   );

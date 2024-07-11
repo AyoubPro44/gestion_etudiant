@@ -56,6 +56,19 @@ class FiliereController {
             return res.status(500).json({ error: 'Failed to fetch program information' });
         }
     };
+
+    async getFiliereNbModule(req, res) {
+        const { id_filiere } = req.params;
+
+        try {
+            const [years] = await Filiere.getYearModuleNumber(id_filiere);
+            if(years.length == 0)
+                return res.status(404).json({ error: 'no year not found' });
+            return res.status(200).json({ years: years})
+        } catch (error) {
+            return res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
 }
 
 module.exports = new FiliereController();
