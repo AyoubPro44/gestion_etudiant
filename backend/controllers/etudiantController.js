@@ -200,7 +200,7 @@ class EtudiantController {
 
   }
 
-  async updateProfInfos(req, res) {
+  async updateEtudiantInfos(req, res) {
     try {
       const { etudiant } = req.body;
       await User.updateInfos(etudiant.id_user, etudiant.firstname, etudiant.lastname, etudiant.email);
@@ -219,7 +219,6 @@ class EtudiantController {
       return res.status(500).json({ error: error.message });
     }
   }
-
 }
 
 module.exports = new EtudiantController();

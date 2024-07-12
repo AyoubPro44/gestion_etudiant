@@ -10,25 +10,26 @@ import { ToastContainer, toast, Bounce } from 'react-toastify';
 import ChangePasswordForm from '../components/changePasswordForm';
 import { formatDate } from '../services/functions'
 import { updateEtudiantInfos } from '../services/etudiantServices';
+import EtudiantChip from '../components/etudiantChip'
+import { getParentEtudiants, updateParentInfos } from '../services/parentServices';
+import { useQuery } from '@tanstack/react-query';
+import { HiPlus } from "react-icons/hi2";
+import { Button } from "@nextui-org/react";
+import AddRemoveEtudiant from '../components/addRemoveEtudiant';
 
-function ProfProfile() {
+function ParentProfile() {
     const navigate = useNavigate();
 
     const validationSchema = Yup.object().shape({
         firstname: Yup.string().required('First Name is required').min(2, 'First Name must be at least 2 characters'),
         lastname: Yup.string().required('Last Name is required').min(2, 'Last Name must be at least 2 characters'),
-        dateNaissance: Yup.date('Invalid Date').required('Date de Naissance is required').max(new Date(), 'Date de Naissance cannot be in the future'),
         email: Yup.string().email('Invalid email format').required('Email is required').test('email-exists', 'Email already exists', async function (email) {
             return email === localStorage.getItem('email') ? true : !(await checkEmail(email));
         }),
-        numEtudiant: Yup.string().required('N° d\'Etudiant is required').test('N° Etudiant exist', 'N° Etudiant already exists', async function (numEtudiant) {
-            return numEtudiant === localStorage.getItem('num_etudiant') ? true : !(await checkNumEtudiant(numEtudiant));
-        }),
-        adresse: Yup.string().required('Adresse is required'),
     });
 
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "etudiant") {
+        if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "parent") {
             logout();
             navigate('/');
         }
@@ -40,11 +41,10 @@ function ProfProfile() {
     });
 
 
-
     const onSubmit = async (data) => {
-        const etudiant = { ...data, id_user: localStorage.getItem('id_user'), id_etudiant: localStorage.getItem('id_etudiant') };
+        const parent = { ...data, id_user: localStorage.getItem('id_user') };
         try {
-            await updateEtudiantInfos(etudiant);
+            await updateParentInfos(parent)
             toast.success('Your informations updated successfully', {
                 position: "top-right",
                 autoClose: 3000,
@@ -95,50 +95,7 @@ function ProfProfile() {
                             />
                             {errors.lastname && <p className="text-red-500 text-sm mt-1">{errors.lastname.message}</p>}
                         </div>
-                        <div className='w-full'>
-                            <label htmlFor="numEtudiant" className="block text-sm font-medium text-gray-700">N° Etudiant</label>
-                            <div className="mt-1">
-                                <input
-                                    id="numEtudiant"
-                                    name="numEtudiant"
-                                    type="text"
-                                    defaultValue={localStorage.getItem('num_etudiant')}
-                                    {...register('numEtudiant')}
-                                    className={`block w-full px-3 py-2 border ${errors.numEtudiant ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
-                                />
-                                {errors.numEtudiant && <p className="mt-2 text-sm text-red-600">{errors.numEtudiant.message}</p>}
-                            </div>
-                        </div>
-                    </div>
-                    <div className="flex md:flex-row flex-col gap-6">
-                        <div className='w-full'>
-                            <label htmlFor="adresse" className="block text-sm font-medium text-gray-700">Adresse</label>
-                            <div className="mt-1">
-                                <input
-                                    id="adresse"
-                                    name="adresse"
-                                    type="text"
-                                    defaultValue={localStorage.getItem('adresse')}
-                                    {...register('adresse')}
-                                    className={`block w-full px-3 py-2 border ${errors.adresse ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
-                                />
-                                {errors.adresse && <p className="mt-2 text-sm text-red-600">{errors.adresse.message}</p>}
-                            </div>
-                        </div>
-                        <div className='md:w-[50%]'>
-                            <label htmlFor="dateNaissance" className="block text-sm font-medium text-gray-700">Date de Naissance</label>
-                            <div className="mt-1">
-                                <input
-                                    id="dateNaissance"
-                                    name="dateNaissance"
-                                    type="date"
-                                    defaultValue={formatDate(localStorage.getItem('date_naissance'))}
-                                    {...register('dateNaissance')}
-                                    className={`block w-full px-3 py-2 border ${errors.dateNaissance ? 'border-red-500' : 'border-gray-300'} rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white text-gray-900`}
-                                />
-                                {errors.dateNaissance && <p className="mt-2 text-sm text-red-600">Invalid Date</p>}
-                            </div>
-                        </div>
+
                     </div>
 
                     <div>
@@ -165,12 +122,13 @@ function ProfProfile() {
                 </form>
             </div>
 
-            <ChangePasswordForm />
+            <AddRemoveEtudiant />
 
+            <ChangePasswordForm />
 
             <ToastContainer />
         </div>
     );
 }
 
-export default ProfProfile;
+export default ParentProfile;

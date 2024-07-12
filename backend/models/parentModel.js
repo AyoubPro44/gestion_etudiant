@@ -11,7 +11,7 @@ const getParentByUserId = async (userId) => {
 
 const getParentEtudiants = async (id_parent) => {
     return db.query(`
-        SELECT e.id_etudiant, u.firstname, u.lastname, e.num_etudiant, e.semestre, f.nom_filiere
+        SELECT e.id_etudiant, u.firstname, u.lastname, e.num_etudiant, e.semestre, f.nom_filiere, e.id_filiere, f.planning
         FROM users u, etudiant e, filiere f
         WHERE u.ID_USER = e.ID_USER 
         and e.ID_FILIERE = f.ID_FILIERE

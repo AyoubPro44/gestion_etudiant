@@ -1,38 +1,45 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaBook } from 'react-icons/fa';
 import { getFiliereYears } from '../services/filiereServices';
 import { useQuery } from '@tanstack/react-query';
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
+import { CircularProgress } from "@nextui-org/react";
 
 const YearsChoosing = () => {
-    //   const years = [
-    //     { id: 1, name: '1er année', modules: 6, sousModules: 12 },
-    //     { id: 2, name: '2eme année', modules: 8, sousModules: 16 },
-    //     { id: 3, name: '3eme année', modules: 7, sousModules: 14 },
-    //     { id: 4, name: '4eme année', modules: 6, sousModules: 12 },
-    //     { id: 5, name: '5eme année', modules: 8, sousModules: 16 },
-    //   ]; 
-
     const navigate = useNavigate()
+    const [idFiliere, setIdFiliere] = useState(0);
 
     const { data: years, isLoading } = useQuery({
         queryKey: ["years"],
         queryFn: () => {
-            return getFiliereYears(localStorage.getItem('id_filiere'))
+            return getFiliereYears(idFiliere)
         }
     })
 
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') != "etudiant") {
+        let role = localStorage.getItem('role');
+        if (!localStorage.getItem('auth') || (role != "etudiant" && role != 'parent')) {
             logout();
             navigate('/');
         }
+        if (role == 'parent') {
+            setIdFiliere(JSON.parse(localStorage.getItem('choosingEtudiant'))?.id_filiere)
+        }
+        else if (role == 'etudiant')
+            setIdFiliere(localStorage.getItem('id_filiere'))
     }, [])
+
+    if (isLoading)
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <CircularProgress color="secondary" size='lg' aria-label="Loading..." className='w-80' />
+            </div>
+        )
 
     return (
         <div className="flex xl:justify-center items-center p-6 bg-gray-100">
-            <div className="grid grid-cols-1 w-full  md:grid-cols-4 gap-4 px-4">
+            <div className="grid grid-cols-2 w-full lg:grid-cols-4 gap-4 px-4">
                 {years?.map((year) => (
                     <div key={year.year} className="bg-white rounded-lg overflow-hidden shadow-md border border-gray-200 hover:shadow-lg transition duration-300">
                         <div className="p-6">
@@ -42,7 +49,7 @@ const YearsChoosing = () => {
                             </div>
                             <p className="text-gray-600 mb-2">{year.nb_modules} Modules</p>
                             <p className="text-gray-600 mb-4">{year.nb_sous_modules} Sous-Modules</p>
-                            <button onClick={() => navigate('/etudiant/grades/' + year.year)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
+                            <button onClick={() => navigate((localStorage.getItem('role') == 'etudiant' ? '/etudiant/grades/' : '/parent/etudiantGrades/') + year.year)} className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50">
                                 Select {year.year}{year.year == 1 ? 'er année' : 'ème année'}
                             </button>
                         </div>

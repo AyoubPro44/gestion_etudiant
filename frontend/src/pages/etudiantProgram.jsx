@@ -1,98 +1,42 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
 import { getFiliereProgram } from '../services/filiereServices'
 import { useQuery } from '@tanstack/react-query';
-
-const filiereProgram = {
-  filiere: 'Computer Science',
-  semesters: [
-    {
-      name: 'Semester 1',
-      modules: [
-        {
-          name: 'Module 1',
-          sousModules: [
-            { name: 'Sous-module 1.1', coeff: 1.5 },
-            { name: 'Sous-module 1.2', coeff: 2.0 },
-          ],
-        },
-        {
-          name: 'Module 2',
-          sousModules: [
-            { name: 'Sous-module 2.1', coeff: 1.0 },
-            { name: 'Sous-module 2.2', coeff: 1.8 },
-          ],
-        },
-        {
-          name: 'Module 1',
-          sousModules: [
-            { name: 'Sous-module 1.1', coeff: 1.5 },
-            { name: 'Sous-module 1.2', coeff: 2.0 },
-          ],
-        },
-        {
-          name: 'Module 2',
-          sousModules: [
-            { name: 'Sous-module 2.1', coeff: 1.0 },
-            { name: 'Sous-module 2.2', coeff: 1.8 },
-          ],
-        },
-      ],
-    },
-    {
-      name: 'Semester 2',
-      modules: [
-        {
-          name: 'Module 1',
-          sousModules: [
-            { name: 'Sous-module 1.1', coeff: 1.5 },
-            { name: 'Sous-module 1.2', coeff: 2.0 },
-          ],
-        },
-        {
-          name: 'Module 2',
-          sousModules: [
-            { name: 'Sous-module 2.1', coeff: 1.0 },
-            { name: 'Sous-module 2.2', coeff: 1.8 },
-          ],
-        },
-        {
-          name: 'Module 3',
-          sousModules: [
-            { name: 'Sous-module 3.1', coeff: 2.0 },
-            { name: 'Sous-module 3.2', coeff: 1.7 },
-          ],
-        },
-        {
-          name: 'Module 4',
-          sousModules: [
-            { name: 'Sous-module 4.1', coeff: 1.2 },
-            { name: 'Sous-module 4.2', coeff: 1.5 },
-          ],
-        },
-
-      ],
-    },
-  ],
-};
+import { CircularProgress } from "@nextui-org/react";
 
 function EtudiantProgram() {
   const navigate = useNavigate()
+  const [idFiliere, setIdFiliere] = useState(0);
+
+  const { data: filiereProgram, isLoading, refetch } = useQuery({
+    queryKey: ["filiereProgram", idFiliere],
+    queryFn: () => {
+      return getFiliereProgram(idFiliere)
+    }
+  })
 
   useEffect(() => {
-    if (!localStorage.getItem('auth') || localStorage.getItem('role') != "etudiant") {
+    let role = localStorage.getItem('role');
+    if (!localStorage.getItem('auth') || (role != "etudiant" && role != 'parent')) {
       logout();
       navigate('/');
     }
+    if (role == 'parent') {
+      setIdFiliere(JSON.parse(localStorage.getItem('choosingEtudiant'))?.id_filiere)
+    }
+    else if (role == 'etudiant')
+      setIdFiliere(localStorage.getItem('id_filiere'))
   }, [])
 
-  const { data: filiereProgram, isLoading } = useQuery({
-    queryKey: ["filiereProgram"],
-    queryFn: () => {
-      return getFiliereProgram(localStorage.getItem('id_filiere'))
-    }
-  })
+
+
+  if (isLoading)
+    return (
+      <div className='flex items-center justify-center min-h-screen'>
+        <CircularProgress color="secondary" size='lg' aria-label="Loading..." className='w-80' />
+      </div>
+    )
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">

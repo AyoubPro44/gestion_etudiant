@@ -18,6 +18,7 @@ import NotFoundPage from './pages/notFoundPage'
 import YearsChoosing from './pages/yearsChoosing'
 import EtudiantProfile from './pages/etudiantProfile'
 import ChooseEtudiant from './pages/chooseEtudiant'
+import ParentProfile from './pages/parentProfile'
 
 function App() {
   const client = new QueryClient()
@@ -42,6 +43,12 @@ function App() {
             <Route path='/etudiant/grades/:year' element={<Layout><EtudiantGrades /></Layout>} />
             <Route path='/etudiant/profile' element={<Layout><EtudiantProfile /></Layout>} />
             <Route path='/parent/chooseEtudiant' element={<ChooseEtudiant />} />
+            <Route path='/parent/etudiantPlanning' element={<Layout><EtudiantPlanning /></Layout>} />
+            <Route path='/parent/etudiantProgram' element={<Layout><EtudiantProgram /></Layout>} />
+            <Route path='/parent/etudiantGrades' element={<Layout><YearsChoosing /></Layout>} />
+            <Route path='/parent/etudiantGrades/:year' element={<Layout><EtudiantGrades /></Layout>} />
+            <Route path='/parent/Profile' element={<Layout><ParentProfile /></Layout>} />
+
             <Route path='/admin' element={<div>administrateur</div>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>

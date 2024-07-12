@@ -13,8 +13,10 @@ import {
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/authentification';
 import useLocalStorage from '../hooks/useLocalStorage'
+import { User } from "@nextui-org/react";
+import { PiStudentBold } from "react-icons/pi";
 
-const ProfLinks = [
+const profLinks = [
   { to: "/professeur/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My Planning" },
   { to: "/professeur/classes", icon: <FaChalkboard className="mr-4" />, label: "Classes" },
   { to: "/professeur/grades", icon: <FaGraduationCap className="mr-4" />, label: "Grades" },
@@ -29,12 +31,21 @@ const etudiantsLinks = [
   { to: "/etudiant/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
 ];
 
+const parentLinks = [
+  { to: "/parent/etudiantPlanning", icon: <FaCalendarAlt className="mr-4" />, label: "Planning" },
+  { to: "/parent/etudiantProgram", icon: <FaChalkboard className="mr-4" />, label: "Filiere Program" },
+  { to: "/parent/etudiantGrades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
+  { to: "/parent/Profile", icon: <FaUser className="mr-4" />, label: "Profile" },
+  { to: "/parent/chooseEtudiant", icon: <PiStudentBold className="mr-4" />, label: "Change Eudiant" },
+];
+
 const SideBar = () => {
   const navigate = useNavigate();
   const [links, setLinks] = useState([]);
   const [firstname] = useLocalStorage('firstname');
   const [lastname] = useLocalStorage('lastname');
   const [email] = useLocalStorage('email');
+  const [choosingEtudiant, setChoosingEtudiant] = useState({})
 
   const logoutFromPage = () => {
     logout();
@@ -43,12 +54,18 @@ const SideBar = () => {
 
   useEffect(() => {
     const role = localStorage.getItem('role');
-    if (role === 'etudiant') setLinks(etudiantsLinks);
-    else if (role === 'professeur') setLinks(ProfLinks);
+    if (role === 'etudiant')
+      setLinks(etudiantsLinks);
+    else if (role === 'professeur')
+      setLinks(profLinks);
+    else if (role === 'parent') {
+      setLinks(parentLinks);
+      setChoosingEtudiant(JSON.parse(localStorage.getItem('choosingEtudiant')));
+    }
   }, []);
 
   return (
-    <div className="top-0 left-0 h-[100vh] w-fit bg-white shadow-md flex flex-col p-4 sticky">
+    <div className="w-fit top-0 left-0 bg-white shadow-md flex flex-col p-4 sticky overflow-y-auto">
       <div className="flex items-center space-x-4 p-2 mb-5">
         <img
           src={`https://ui-avatars.com/api/?name=${firstname}+${lastname}&font-size=0.36&color=233467&background=DBE1FF`}
@@ -61,6 +78,21 @@ const SideBar = () => {
         </div>
       </div>
       <Divider />
+      {
+        localStorage.getItem('role') == 'parent' &&
+        <div className="flex items-center space-x-4 p-2 mt-4">
+          <img
+            src={`https://ui-avatars.com/api/?name=${choosingEtudiant.firstname}+${choosingEtudiant.lastname}&font-size=0.36&color=ffffff&background=6366F1`}
+            alt="profile"
+            className="w-10 h-10 rounded-full"
+          />
+          <div>
+            <h4 className="text-gray-700 text-sm font-semibold">Etudiant : {choosingEtudiant.firstname + ' ' + choosingEtudiant.lastname}</h4>
+            <span className="text-sm text-gray-500">N° :  {choosingEtudiant.num_etudiant}</span>
+          </div>
+        </div>
+      }
+
       <nav className="flex flex-col space-y-2 mt-4">
         <Link
           key="/acceuil"
@@ -71,14 +103,18 @@ const SideBar = () => {
           <span>Accueil</span>
         </Link>
         {links.map(link => (
-          <Link
-            key={link.to}
-            to={link.to}
-            className={`p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center ${location.pathname === link.to ? "bg-gray-100 text-indigo-500" : ""}`}
-          >
-            {link.icon}
-            <span>{link.label}</span>
-          </Link>
+
+          <div>
+            {link.to == '/parent/Profile' && <Divider className='mb-4' />}
+            <Link
+              key={link.to}
+              to={link.to}
+              className={`p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center ${location.pathname === link.to ? "bg-gray-100 text-indigo-500" : ""}`}
+            >
+              {link.icon}
+              <span>{link.label}</span>
+            </Link>
+          </div>
         ))}
         <span
           onClick={logoutFromPage}
@@ -89,14 +125,15 @@ const SideBar = () => {
         </span>
 
         <Divider />
-        <div className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
+        <a href="mailto:support@school.com" className="p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center">
           <FaEnvelope className="mr-4" />
           <div>
             <span>Contact Us</span>
-            <a href="mailto:support@school.com" className="text-sm text-indigo-500 block">support@school.com</a>
+            <span className="text-sm text-indigo-500 block">support@school.com</span>
           </div>
-        </div>
-        
+        </a>
+
+
       </nav>
     </div>
   );

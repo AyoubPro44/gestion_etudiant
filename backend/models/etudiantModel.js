@@ -68,6 +68,18 @@ const updateInfos = async (id_etudiant, adresse, dateNaissance, numEtudiant) => 
                     `, [numEtudiant, dateNaissance, adresse, id_etudiant]);
 }
 
+const removeParent = async (id_etudiant) => {
+  return db.query(`
+    UPDATE etudiant SET id_parent = NULL WHERE id_etudiant = ?;
+  `, [id_etudiant])
+}
+
+const addParent = async (num_etudiant, id_parent) => {
+  return db.query(`
+    UPDATE etudiant SET id_parent = ? WHERE num_etudiant = ?;
+  `, [id_parent, num_etudiant])
+}
+
 module.exports = {
   createEtudiant,
   getEtudiantByNum,
@@ -79,5 +91,7 @@ module.exports = {
   updateNote,
   updateInfos,
   getEtudiantPlanningName,
-  getEtudiantNotes
+  getEtudiantNotes,
+  removeParent,
+  addParent
 };

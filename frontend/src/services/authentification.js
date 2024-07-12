@@ -129,4 +129,9 @@ export const logout = () => {
     localStorage.removeItem('id_prof');
     localStorage.removeItem('num_bureau');
     localStorage.removeItem('id_admin');
+    localStorage.removeItem('etudiantFirstname');
+    localStorage.removeItem('etudiantLastname');
+    localStorage.removeItem('etudiantNum');
+    localStorage.removeItem('planning');
+    localStorage.removeItem('choosingEtudiant')
 }

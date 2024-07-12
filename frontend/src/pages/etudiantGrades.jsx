@@ -1,28 +1,43 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaBook } from 'react-icons/fa';
 import { useNavigate, useParams } from 'react-router-dom';
 import { logout } from '../services/authentification';
 import { useQuery } from '@tanstack/react-query';
 import { getEtudiantYearNotes } from '../services/etudiantServices';
+import { CircularProgress } from "@nextui-org/react";
 
 const EtudiantGrades = () => {
 
     const { year } = useParams();
     const navigate = useNavigate()
-
-    const { data: grades, isLoading } = useQuery({
-        queryKey: ["gradesData"],
-        queryFn: () => {
-            return getEtudiantYearNotes(localStorage.getItem('id_etudiant'), year);
-        }
-    })
+    const [idEtudiant, setIdEtudiant] = useState(0)
 
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') != "etudiant") {
+        let role = localStorage.getItem('role');
+        if (!localStorage.getItem('auth') || (role != "etudiant" && role != 'parent')) {
             logout();
             navigate('/');
         }
+        if (role == 'parent') {
+            setIdEtudiant(JSON.parse(localStorage.getItem('choosingEtudiant'))?.id_etudiant)
+        }
+        else if (role == 'etudiant')
+            setIdEtudiant(localStorage.getItem('id_etudiant'))
     }, [])
+
+    const { data: grades, isLoading } = useQuery({
+        queryKey: ["grades", idEtudiant, year],
+        queryFn: () => {
+            return getEtudiantYearNotes(idEtudiant, year);
+        }
+    })
+
+    if (isLoading)
+        return (
+            <div className='flex items-center justify-center min-h-screen'>
+                <CircularProgress color="secondary" size='lg' aria-label="Loading..." className='w-80' />
+            </div>
+        )
 
     return (
         <div className="container mx-auto px-4 py-8">

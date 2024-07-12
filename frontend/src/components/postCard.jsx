@@ -1,6 +1,7 @@
 import React from 'react'
 import school from '../assets/images/school.jpg'; // Example import for news images
 import { SERVERPOINT } from '../const';
+import PostModal from './postModal';
 
 function PostCard(props) {
     return (
@@ -15,9 +16,7 @@ function PostCard(props) {
                 </div>
                 <div className="flex justify-between items-center mt-4">
                     <span className="text-gray-600 text-sm">{props.post.DATE_POST}</span>
-                    <button className="bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-md transition duration-200 focus:outline-none">
-                        Read More
-                    </button>
+                    <PostModal post={props.post} />
                 </div>
             </div>
         </div>
