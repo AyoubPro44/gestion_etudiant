@@ -10,11 +10,6 @@ const SignUp = () => {
     const [userType, setUserType] = useState('etudiant');
     const navigate = useNavigate();
 
-    const handleSignUp = async (e) => {
-        e.preventDefault();
-        navigate('/' + localStorage.getItem('role'));
-    };
-
     useEffect(() => {
         logout();
     }, [])

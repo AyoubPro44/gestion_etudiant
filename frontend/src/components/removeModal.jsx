@@ -10,7 +10,7 @@ function RemoveModal(props) {
     }
     return (
         <>
-            <span onClick={onOpen} className="text-lg text-danger cursor-pointer active:opacity-50">
+            <span onClick={onOpen}>
                 {props.button}
             </span>
             <Modal size="sm" isOpen={isOpen} onOpenChange={onOpenChange} scrollBehavior={"inside"} className="md:mb-0 mb-[10%]">

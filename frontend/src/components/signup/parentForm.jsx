@@ -24,7 +24,7 @@ function ParentForm() {
         }
         await createUser(parent);
         await userLogin(parent.email, parent.password);
-        navigate('/acceuil');
+        window.location.href = '/parent/chooseEtudiant'
     }
 
 

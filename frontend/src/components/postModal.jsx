@@ -1,6 +1,6 @@
 import React from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
-import { SERVERPOINT } from "../const";
+import { POST_IMAGES_PATH, SERVERPOINT } from "../const";
 
 function PostModal(props) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
@@ -24,7 +24,7 @@ function PostModal(props) {
                         <>
                             <ModalHeader className="flex flex-col gap-1">{props.post.TITLE}</ModalHeader>
                             <ModalBody>
-                            <img className="w-full h-48 object-cover" src={`${SERVERPOINT}/secure-uploads/posts/${props.post.PHOTO}`} alt={props.post.TITLE} />
+                                <img className="w-full h-48 object-cover" src={`${POST_IMAGES_PATH}${props.post.PHOTO}`} alt={props.post.TITLE} />
 
                                 <p>
                                     {props.post.DESCRIPTION}

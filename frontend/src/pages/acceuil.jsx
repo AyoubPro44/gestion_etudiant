@@ -1,61 +1,71 @@
-import React, { useEffect } from 'react'
-import { FaRegNewspaper } from 'react-icons/fa'; // Example of using react-icons for icons
+import React, { useEffect, useState } from 'react';
+import { FaRegNewspaper } from 'react-icons/fa';
 import PostCard from '../components/postCard';
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { getAllPosts } from '../services/postServices'
-
+import { getAllPosts } from '../services/postServices';
+import { Button, useDisclosure } from '@nextui-org/react';
+import { IoMdAdd } from "react-icons/io";
+import AddPostModal from '../components/addPostModal';
 
 function Acceuil() {
-  const news = [
-    {
-      id: 1,
-      title: "Welcome Back to School!",
-      description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae eros nisi. Nam ullamcorper tortor nec eros iaculis, vitae vestibulum lacus lacinia.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae eros nisi. Nam ullamcorper tortor nec eros iaculis, vitae vestibulum lacus lacinia.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae eros nisi. Nam ullamcorper tortor nec eros iaculis, vitae vestibulum lacus lacinia.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae eros nisi. Nam ullamcorper tortor nec eros iaculis, vitae vestibulum lacus lacinia.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam vitae eros nisi. Nam ullamcorper tortor nec eros iaculis, vitae vestibulum lacus lacinia.",
-      date: "July 1, 2024"
-    },
-    {
-      id: 2,
-      title: "Exciting Events This Month",
-      description: "Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Duis feugiat urna sit amet justo rutrum, vel scelerisque risus malesuada.",
-      date: "June 28, 2024"
-    },
-    {
-      id: 3,
-      title: "New Sports Facilities Opened",
-      description: "Vestibulum in turpis non nisi feugiat suscipit. Vivamus feugiat aliquet elit, sit amet consectetur lorem auctor vitae.",
-      date: "June 25, 2024"
-    }
-  ];
   const navigate = useNavigate();
+  const role = localStorage.getItem('role');
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if(!localStorage.getItem('auth')) {
+    if (!localStorage.getItem('auth')) {
       logout();
       navigate('/');
     }
-  },[])
+  }, []);
 
-  const { data: posts, isLoading } = useQuery({
-    queryKey: ["posts"],
-    queryFn: () => {
-      return getAllPosts()
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  const fetchPosts = async () => {
+    try {
+      const fetchedPosts = await getAllPosts();
+      setPosts(fetchedPosts);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
     }
-  })
-  
+  };
+
+
   return (
     <div className="py-12 p-6">
       <div className="container mx-auto px-4">
-        <h2 className="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-          <FaRegNewspaper className="mr-4 text-indigo-500" />
-          NOUVELLES ACTUALITÉS
-        </h2>
-        {posts?.map((post) => (
-          <PostCard post={post}/>
-        ))}
+        <div className="flex justify-between items-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-800 flex items-center">
+            <FaRegNewspaper className="mr-4 text-indigo-500" />
+            NOUVELLES ACTUALITÉS
+          </h2>
+          {
+            role === 'admin' &&
+            <Button className="bg-indigo-500 text-white" onPress={onOpen} startContent={<IoMdAdd />}>
+              New Post
+            </Button>
+          }
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {posts.map((post) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              fetchPosts={fetchPosts}
+            />
+          ))}
+        </div>
       </div>
+
+      <AddPostModal isOpen={isOpen} onOpenChange={onOpenChange} fetchPosts={fetchPosts} />
     </div>
   );
-};
-export default Acceuil
+}
+
+export default Acceuil;

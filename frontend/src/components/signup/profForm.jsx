@@ -34,7 +34,7 @@ function ProfForm() {
         const prof = { ...data, sousModules: sousModuleIds, role: "professeur" };
         await createUser(prof);
         await userLogin(prof.email, prof.password);
-        navigate('/acceuil');
+        window.location.href = '/acceuil';
     }
 
     const { data: sousModules, isLoading, error } = useQuery({

@@ -47,9 +47,7 @@ function App() {
             <Route path='/parent/etudiantProgram' element={<Layout><EtudiantProgram /></Layout>} />
             <Route path='/parent/etudiantGrades' element={<Layout><YearsChoosing /></Layout>} />
             <Route path='/parent/etudiantGrades/:year' element={<Layout><EtudiantGrades /></Layout>} />
-            <Route path='/parent/Profile' element={<Layout><ParentProfile /></Layout>} />
-
-            <Route path='/admin' element={<div>administrateur</div>} />
+            <Route path='/parent/profile' element={<Layout><ParentProfile /></Layout>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

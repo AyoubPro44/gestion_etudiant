@@ -9,7 +9,7 @@ import { Select, SelectItem } from "@nextui-org/react";
 import adminSchema from '../../schema/adminSchema';
 import { useNavigate } from 'react-router-dom';
 
-function AdminForm() {    
+function AdminForm() {
     const navigate = useNavigate()
     const { register, handleSubmit, formState: { errors } } = useForm({
         resolver: yupResolver(adminSchema)
@@ -22,7 +22,7 @@ function AdminForm() {
         }
         await createUser(admin);
         await userLogin(admin.email, admin.password);
-        navigate('/acceuil');
+        window.location.href = '/acceuil'
     }
 
 

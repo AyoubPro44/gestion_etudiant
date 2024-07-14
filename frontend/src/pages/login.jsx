@@ -12,12 +12,11 @@ const Login = () => {
         e.preventDefault();
         try {
             await userLogin(email, password);
-            console.log(localStorage.getItem('role'))
-            if (localStorage.getItem('role') == 'parent')
+            const role = localStorage.getItem('role');
+            if (role == 'parent')
                 window.location.href = '/parent/chooseEtudiant'
             else window.location.href = '/acceuil';
         } catch (error) {
-            console.error('Login error:', error);
             setErrorLogin(true);
         }
     };

@@ -8,7 +8,13 @@ import {
   FaUser,
   FaSignOutAlt,
   FaFileAlt,
-  FaEnvelope
+  FaEnvelope,
+  FaNewspaper,
+  FaSchool,
+  FaUserFriends,
+  FaChalkboardTeacher,
+  FaUserGraduate,
+  FaUserCircle
 } from 'react-icons/fa';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/authentification';
@@ -20,7 +26,7 @@ const profLinks = [
   { to: "/professeur/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My Planning" },
   { to: "/professeur/classes", icon: <FaChalkboard className="mr-4" />, label: "Classes" },
   { to: "/professeur/grades", icon: <FaGraduationCap className="mr-4" />, label: "Grades" },
-  { to: "/professeur/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
+  { to: "/professeur/profile", icon: <FaUserCircle className="mr-4" />, label: "Profile" },
   { to: "/professeur/report", icon: <FaFileAlt className="mr-4" />, label: "Report" },
 ];
 
@@ -28,16 +34,26 @@ const etudiantsLinks = [
   { to: "/etudiant/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My planning" },
   { to: "/etudiant/program", icon: <FaChalkboard className="mr-4" />, label: "Program" },
   { to: "/etudiant/grades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
-  { to: "/etudiant/profile", icon: <FaUser className="mr-4" />, label: "Profile" },
+  { to: "/etudiant/profile", icon: <FaUserCircle className="mr-4" />, label: "Profile" },
 ];
 
 const parentLinks = [
   { to: "/parent/etudiantPlanning", icon: <FaCalendarAlt className="mr-4" />, label: "Planning" },
   { to: "/parent/etudiantProgram", icon: <FaChalkboard className="mr-4" />, label: "Filiere Program" },
   { to: "/parent/etudiantGrades", icon: <FaGraduationCap className="mr-4" />, label: "Consultation notes" },
-  { to: "/parent/Profile", icon: <FaUser className="mr-4" />, label: "Profile" },
+  { to: "/parent/profile", icon: <FaUserCircle className="mr-4" />, label: "Profile" },
   { to: "/parent/chooseEtudiant", icon: <PiStudentBold className="mr-4" />, label: "Change Eudiant" },
 ];
+
+const adminLinks = [
+  { to: "/admin/filieres", icon: <FaSchool className="mr-4" />, label: "Filieres" },
+  { to: "/admin/professeurs", icon: <FaChalkboardTeacher className="mr-4" />, label: "Professeurs" },
+  { to: "/admin/parents", icon: <FaUserFriends className="mr-4" />, label: "Parents" },
+  { to: "/admin/reports", icon: <FaFileAlt className="mr-4" />, label: "Reports" },
+  { to: "/admin/etudiants", icon: <FaUserGraduate className="mr-4" />, label: "Etudiants" },
+  { to: "/admin/profile", icon: <FaUserCircle className="mr-4" />, label: "Profile" },
+];
+
 
 const SideBar = () => {
   const navigate = useNavigate();
@@ -61,6 +77,9 @@ const SideBar = () => {
     else if (role === 'parent') {
       setLinks(parentLinks);
       setChoosingEtudiant(JSON.parse(localStorage.getItem('choosingEtudiant')));
+    }
+    else if (role === 'admin') {
+      setLinks(adminLinks)
     }
   }, []);
 
@@ -105,7 +124,7 @@ const SideBar = () => {
         {links.map(link => (
 
           <div>
-            {link.to == '/parent/Profile' && <Divider className='mb-4' />}
+            {link.to.endsWith('profile') && <Divider className='mb-4' />}
             <Link
               key={link.to}
               to={link.to}
