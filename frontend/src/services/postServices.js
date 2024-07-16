@@ -62,8 +62,7 @@ export const updatePost = async (id_post, title, description, image, isImageEdit
 
         const response = await axios.post(`${SERVERPOINT}/api/posts/updatePost`, formData, config);
         if (response.status === 200) {
-            return response.data.message; // Assuming your backend returns a success message
-        } else {
+            return response.data.message; 
             throw new Error('Failed to update post');
         }
     } catch (error) {

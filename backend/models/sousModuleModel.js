@@ -7,4 +7,27 @@ const getAllSousModuleFiliere = () => {
   `);
 };
 
-module.exports = { getAllSousModuleFiliere };
+const insertSousModule = (id_module, nom_sous_module, coeff) => {
+  return db.query(`
+    INSERT INTO sous_module (id_module, nom_sous_module, coeff) VALUES (?, ?, ?)
+  `, [id_module, nom_sous_module, coeff]);
+}
+
+const deleteSousModule = (id_sous_module) => {
+  return db.query(`
+    DELETE FROM sous_module WHERE id_sous_module = ?
+  `, [id_sous_module]);
+}
+
+const updateSousModule = (id_sous_module, nom_sous_module, coeff) => {
+  return db.query(`
+    UPDATE sous_module SET nom_sous_module = ?, coeff = ? WHERE id_sous_module = ?
+  `, [nom_sous_module, coeff, id_sous_module]);
+}
+
+module.exports = { 
+  getAllSousModuleFiliere,
+  insertSousModule,
+  deleteSousModule,
+  updateSousModule
+};

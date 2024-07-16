@@ -18,59 +18,62 @@ import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery } from "@tanstack/react-query";
-import { getEtudiantsByFiliere } from '../services/etudiantServices';
 import { CSVLink } from 'react-csv';
 import { logout } from "../services/authentification";
+import { getAllProfs } from "../services/profServices";
+import { MdModeEditOutline } from "react-icons/md";
+import { FaEye } from "react-icons/fa";
 
 const columns = [
-    { name: "Numéro Étudiant", uid: "num_etudiant", sortable: true },
-    { name: "Prénom", uid: "firstname", sortable: true },
-    { name: "Nom", uid: "lastname", sortable: true },
-    { name: "Email", uid: "email", sortable: true },
-    { name: "Date de Naissance", uid: "date_de_naissance", sortable: true },
-    { name: "Adresse", uid: "adresse" },
+    { name: "First Name", uid: "firstname", sortable: true },
+    { name: "Last Name", uid: "lastname", sortable: true },
+    { name: "Office Number", uid: "num_bureau", sortable: true },
+    { name: "Number of Sub-Modules", uid: "nb_sous_modules", sortable: true },
+    { name: "Planning", uid: "planning" },
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["num_etudiant", "firstname", "lastname", "email", "date_de_naissance", "adresse"];
+const INITIAL_VISIBLE_COLUMNS = ["firstname", "lastname", "num_bureau", "nb_sous_modules", "planning"];
 
 const headers = [
-    { label: 'Numéro Étudiant', key: 'num_etudiant' },
-    { label: 'Prénom', key: 'firstname' },
-    { label: 'Nom', key: 'lastname' },
-    { label: 'Email', key: 'email' },
-    { label: 'Date de Naissance', key: 'date_de_naissance' },
-    { label: 'Adresse', key: 'address' },
+    { label: 'First Name', key: 'firstname' },
+    { label: 'Last Name', key: 'lastname' },
+    { label: 'Office Number', key: 'num_bureau' },
+    { label: 'Number of Sub-Modules', key: 'nb_sous_modules' },
+    { label: 'Planning', key: 'planning' },
 ];
 
+const csvHeaders = [
+    { label: 'First Name', key: 'firstname' },
+    { label: 'Last Name', key: 'lastname' },
+    { label: 'Office Number', key: 'num_bureau' },
+    { label: 'Number of Sub-Modules', key: 'nb_sous_modules' },
+];
 
-
-export default function EtudiantList() {
+export default function ProfsGestion() {
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-    const [selectedEtudiants, setSelectedEtudiants] = React.useState([]);
+    const [selectedProfesseurs, setSelectedProfesseurs] = React.useState([]);
     const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
     const [sortDescriptor, setSortDescriptor] = React.useState({
-        column: "num_etudiant",
+        column: "firstname",
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
     const { id_filiere, semestre } = useParams();
 
-    const navigate = useNavigate()
+    const navigate = useNavigate();
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') != "professeur") {
+        if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "admin") {
             logout();
             navigate('/');
         }
-    }, [])
+    }, []);
 
-    const { data: etudiants = [], isLoading } = useQuery({
-        queryKey: ["etudiants", id_filiere],
-        queryFn: () => getEtudiantsByFiliere(id_filiere, semestre),
+    const { data: professeurs = [], isLoading } = useQuery({
+        queryKey: ["professeurs", id_filiere],
+        queryFn: () => getAllProfs(),
     });
-
-
 
     const hasSearchFilter = Boolean(filterValue);
 
@@ -80,17 +83,17 @@ export default function EtudiantList() {
     }, [visibleColumns]);
 
     const filteredItems = React.useMemo(() => {
-        let filteredStudents = etudiants;
+        let filteredProfesseurs = professeurs;
 
         if (hasSearchFilter) {
-            filteredStudents = filteredStudents.filter((student) =>
-                student.firstname.toLowerCase().includes(filterValue.toLowerCase()) ||
-                student.lastname.toLowerCase().includes(filterValue.toLowerCase())
+            filteredProfesseurs = filteredProfesseurs.filter((professeur) =>
+                professeur.firstname.toLowerCase().includes(filterValue.toLowerCase()) ||
+                professeur.lastname.toLowerCase().includes(filterValue.toLowerCase())
             );
         }
 
-        return filteredStudents;
-    }, [etudiants, filterValue]);
+        return filteredProfesseurs;
+    }, [professeurs, filterValue]);
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -109,8 +112,8 @@ export default function EtudiantList() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((student, columnKey) => {
-        const cellValue = student[columnKey];
+    const renderCell = React.useCallback((professeur, columnKey) => {
+        const cellValue = professeur[columnKey];
         return cellValue;
     }, []);
 
@@ -181,9 +184,9 @@ export default function EtudiantList() {
                             </DropdownMenu>
                         </Dropdown>
                         <CSVLink
-                            data={etudiants}
-                            headers={headers}
-                            filename={"etudiants.csv"}
+                            data={professeurs}
+                            headers={csvHeaders}
+                            filename={"professeurs.csv"}
                             className="flex items-center gap-2 btn btn-primary"
                         >
                             <Button color="primary" endContent={<LuDownload />}>
@@ -193,7 +196,7 @@ export default function EtudiantList() {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Total {etudiants?.length} etudiants</span>
+                    <span className="text-default-400 text-small">Total {professeurs?.length} professeurs</span>
                     <label className="flex items-center text-default-400 text-small">
                         Rows per page:
                         <select
@@ -212,7 +215,7 @@ export default function EtudiantList() {
         filterValue,
         visibleColumns,
         onRowsPerPageChange,
-        etudiants?.length,
+        professeurs?.length,
         onSearchChange,
         hasSearchFilter,
     ]);
@@ -220,11 +223,6 @@ export default function EtudiantList() {
     const bottomContent = React.useMemo(() => {
         return (
             <div className="py-2 px-2 flex justify-between items-center">
-                <span className="w-[30%] text-small text-default-400">
-                    {/* {selectedKeys === "all"
-                        ? "All items selected"
-                        : `${selectedKeys.size} of ${filteredItems.length} selected`} */}
-                </span>
                 <Pagination
                     isCompact
                     showControls
@@ -247,39 +245,43 @@ export default function EtudiantList() {
     }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
 
     return (
-        <div className="bg-gray-100 py-12 px-4 h-full">
+        <div className="py-12 px-4 h-full">
             <div className="container mx-auto px-4">
                 <Table
                     aria-label="Example table with custom cells, pagination and sorting"
                     isHeaderSticky
                     bottomContent={bottomContent}
-                    bottomContentPlacement="outside"
+                    topContent={topContent}
                     selectedKeys={selectedKeys}
                     sortDescriptor={sortDescriptor}
-                    topContent={topContent}
                     topContentPlacement="outside"
-                    onSelectionChange={setSelectedKeys}
+                    bottomContentPlacement="outside"
                     onSortChange={setSortDescriptor}
+                    onSelectionChange={setSelectedKeys}
                 >
                     <TableHeader columns={headerColumns}>
                         {(column) => (
                             <TableColumn
                                 key={column.uid}
-                                align={"start"}
                                 allowsSorting={column.sortable}
+                                className="bg-gray-200"
                             >
                                 {column.name}
                             </TableColumn>
                         )}
                     </TableHeader>
-                    <TableBody emptyContent={"No students found"} items={sortedItems}>
-
+                    <TableBody items={sortedItems}>
                         {(item) => (
-                            <TableRow key={item.num_etudiant}>
+                            <TableRow key={item.id_professeur}>
+
                                 {(columnKey) => (
-                                    <TableCell key={columnKey}>
-                                        {renderCell(item, columnKey)}
-                                    </TableCell>
+                                    columnKey == 'planning'
+                                        ? <TableCell className="flex flex-row gap-4">
+                                            <FaEye size={20} className="cursor-pointer text-indigo-600 hover:text-indigo-900 mr-4" title="View Planning" />
+                                            <MdModeEditOutline size={20} className="cursor-pointer text-purple-600 hover:text-purple-900" title="Edit Planning" />
+                                          </TableCell>
+                                        : <TableCell>{renderCell(item, columnKey)}</TableCell>
+
                                 )}
                             </TableRow>
                         )}

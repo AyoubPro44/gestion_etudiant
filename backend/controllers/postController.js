@@ -13,7 +13,6 @@ const upload = multer({
         }
     }),
     fileFilter: (req, file, cb) => {
-        // Add file type checking if necessary
         cb(null, true);
     }
 });
@@ -58,8 +57,6 @@ class PostController {
             let updatedImage = '';
             const prevPost = await Post.getPostById(id_post);
             const isEdited = JSON.parse(isImageEdited)
-            console.log(typeof isEdited)
-            console.log(isEdited)
             if (image && isEdited) {
 
                 const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
@@ -68,7 +65,6 @@ class PostController {
                 fs.writeFileSync(path.join(__dirname, '../uploads/posts', imageName), buffer);
                 updatedImage = imageName;
                 if (prevPost && prevPost.photo) {
-                    console.log('isss ')
                     const imagePath = path.join(__dirname, '../uploads/posts', prevPost.photo);
                     if (fs.existsSync(imagePath)) {
                         fs.unlinkSync(imagePath);

@@ -5,7 +5,9 @@ function RemoveModal(props) {
     const { isOpen, onOpen, onOpenChange } = useDisclosure();
 
     const confirmRemove = async (onClose) => {
-        props.onConfirm()
+        if (props.idRemove)
+            props.onConfirm(props.idRemove)
+        else props.onConfirm()
         onClose()
     }
     return (

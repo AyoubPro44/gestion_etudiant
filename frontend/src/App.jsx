@@ -19,6 +19,9 @@ import YearsChoosing from './pages/yearsChoosing'
 import EtudiantProfile from './pages/etudiantProfile'
 import ChooseEtudiant from './pages/chooseEtudiant'
 import ParentProfile from './pages/parentProfile'
+import FilieresGestion from './pages/filieresGestion'
+import FiliereDetails from './pages/filiereDetails'
+import ProfsGestion from './pages/profsGestion'
 
 function App() {
   const client = new QueryClient()
@@ -48,6 +51,9 @@ function App() {
             <Route path='/parent/etudiantGrades' element={<Layout><YearsChoosing /></Layout>} />
             <Route path='/parent/etudiantGrades/:year' element={<Layout><EtudiantGrades /></Layout>} />
             <Route path='/parent/profile' element={<Layout><ParentProfile /></Layout>} />
+            <Route path='/admin/filieres' element={<Layout><FilieresGestion /></Layout>} />
+            <Route path='/admin/filieres/:id_filiere' element={<Layout><FiliereDetails /></Layout>} />
+            <Route path='/admin/professeurs' element={<Layout><ProfsGestion /></Layout>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

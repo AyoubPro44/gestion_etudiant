@@ -49,7 +49,7 @@ const AddPostModal = ({ isOpen, onOpenChange, fetchPosts }) => {
       await fetchPosts();
       setPostInfo({ image: '', title: '', description: '' });
       setImagePreview(null);
-      onOpenChange(false); // Close modal on successful post addition
+      onOpenChange(false);
     } catch (error) {
       console.error('Failed to add new post:', error);
     }

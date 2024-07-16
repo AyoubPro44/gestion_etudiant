@@ -49,6 +49,17 @@ class ProfController {
             return res.status(500).json({ error: error.message });
         }
     }
+
+    async getAllProfs(req, res) {
+        try {
+            const [profs] = await Prof.getAllProfs();
+            if(profs.length == 0)
+                return res.status(404).json({ message: "no prof found" })
+            return res.status(200).json({ profs: profs })
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
 }
 
 module.exports = new ProfController();

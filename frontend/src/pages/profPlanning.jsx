@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getProfCourses } from '../services/profServices'
 import { logout } from '../services/authentification';
 import { useNavigate } from 'react-router-dom';
-import { SERVERPOINT } from '../const';
+import { PLANNING_IMAGES_PATH, SERVERPOINT } from '../const';
 
 const ProfPlanning = () => {
 
@@ -30,7 +30,7 @@ const ProfPlanning = () => {
           My Schedule
         </h2>
         <div className="bg-white rounded-lg overflow-hidden shadow-md mb-8">
-          <img className="w-full h-auto" src={`${SERVERPOINT}/secure-uploads/plannings/${localStorage.getItem('planning')}`} alt="Schedule" />
+          <img className="w-full h-auto" src={`${PLANNING_IMAGES_PATH}${localStorage.getItem('planning')}`} alt="Schedule" />
         </div>
 
         <h3 className="text-2xl font-bold text-gray-800 mb-6">My Courses</h3>

@@ -18,6 +18,12 @@ const getFiliereById = async (id_filiere) => {
   return db.query('SELECT * FROM filiere WHERE ID_FILIERE = ?', [id_filiere]);
 }
 
+const getPlanningName = async (id_filiere, semestre) => {
+  return db.query(`
+    SELECT planning FROM semestre_planning WHERE id_filiere = ? and semestre = ?
+  `, [id_filiere, semestre])
+}
+
 const getYearModuleNumber = async (id_filiere) => {
   return db.query(`
       SELECT
@@ -41,9 +47,52 @@ const getYearModuleNumber = async (id_filiere) => {
   `, [id_filiere])
 }
 
+const getAllFiliereInfos = () => {
+  return db.query(`
+    SELECT f.id_filiere, f.nom_filiere, COUNT(DISTINCT m.id_module) as nb_modules, COUNT(DISTINCT sm.id_sous_module) as nb_sous_modules, COUNT(DISTINCT e.ID_ETUDIANT) as nb_etudiants FROM filiere f, module m, sous_module sm, etudiant e
+    WHERE f.ID_FILIERE = m.ID_FILIERE and m.ID_MODULE = sm.ID_MODULE and f.ID_FILIERE = e.ID_FILIERE
+    GROUP BY f.ID_FILIERE;
+  `);
+}
+
+const updateFiliereName = (nom_filiere, id_filiere) => {
+  return db.query(`UPDATE filiere SET nom_filiere = ? WHERE id_filiere = ?`, [nom_filiere, id_filiere])
+}
+
+const getFiliereSemestres = (id_filiere) => {
+  return db.query(`
+    SELECT 
+      sp.id_planning, 
+      sp.planning, 
+      sp.semestre, 
+      COUNT(DISTINCT m.id_module) as nb_modules,
+      COUNT(DISTINCT sm.id_sous_module) as nb_sous_modules,
+      COUNT(DISTINCT e.ID_ETUDIANT) as nb_etudiants 
+    FROM 
+      semestre_planning sp
+      LEFT JOIN module m ON sp.ID_FILIERE = m.ID_FILIERE and sp.SEMESTRE = m.SEMESTRE
+      LEFT JOIN sous_module sm ON m.ID_MODULE = sm.ID_MODULE
+      LEFT JOIN etudiant e ON sp.ID_FILIERE = e.ID_FILIERE AND sp.SEMESTRE = e.SEMESTRE
+    WHERE 
+      sp.ID_FILIERE = ?
+    GROUP BY sp.ID_PLANNING, sp.SEMESTRE; 
+  `, [id_filiere])
+}
+
+const updatePlanning = (planning, id_filiere, semestre) => {
+  return db.query(`
+      UPDATE semestre_planning SET planning = ? WHERE id_filiere = ? and semestre = ?
+      `,[planning, id_filiere, semestre]);
+}
+
 module.exports = {
   getAllFiliere,
   getFiliereProgram,
   getFiliereById,
-  getYearModuleNumber
+  getYearModuleNumber,
+  updateFiliereName,
+  getAllFiliereInfos,
+  getFiliereSemestres,
+  updatePlanning,
+  getPlanningName
 };

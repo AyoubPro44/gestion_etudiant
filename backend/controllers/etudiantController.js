@@ -82,17 +82,11 @@ class EtudiantController {
     try {
       let coeffs = 0.0;
       let total = 0.0;
-      let [nb_sous_modules] = await Module.getNbSousModule(id_module);
-
-      if (!nb_sous_modules || !nb_sous_modules[0] || isNaN(nb_sous_modules[0].nb_sous_module)) {
-        return null;
-      }
-
       for (const sous_module of sous_modules) {
         if (!sous_module.total_sous_module || isNaN(parseFloat(sous_module.total_sous_module))) {
           return null;
         }
-        const totalSousModule = parseFloat(sous_module.total_sous_module);
+        const totalSousModule = parseFloat(sous_module.total_sous_module) * sous_module.coeff;
         if (isNaN(totalSousModule)) {
           return null;
         }
@@ -101,7 +95,7 @@ class EtudiantController {
       }
 
 
-      return parseFloat((total / nb_sous_modules[0].nb_sous_module).toFixed(2));
+      return parseFloat((total / coeffs).toFixed(2));
     } catch (error) {
       console.error('Error in calculateTotalModule:', error);
       return null;

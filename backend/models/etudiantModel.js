@@ -8,8 +8,10 @@ const getEtudiantByUserId = (userId) => {
   return db.query('SELECT * FROM etudiant WHERE ID_USER = ?', [userId]);
 }
 
-const getEtudiantPlanningName = (id_filiere) => {
-  return db.query('Select planning from filiere where id_filiere = ?', [id_filiere])
+const getEtudiantPlanningName = (id_filiere, semestre) => {
+  return db.query(`Select planning from filiere f, semestre_planning sp
+                  where f.ID_FILIERE = sP.ID_FILIERE
+                  and f.id_filiere = ? and sp.SEMESTRE = ?;`, [id_filiere, semestre])
 }
 
 const getEtudiantByNum = (numEtudiant) => {

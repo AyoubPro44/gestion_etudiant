@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import { SERVERPOINT } from '../const';
+import { PLANNING_IMAGES_PATH, SERVERPOINT } from '../const';
 import { FaCalendarAlt } from 'react-icons/fa';
 import { logout } from '../services/authentification';
 
@@ -30,7 +30,7 @@ function EtudiantPlanning() {
                 {localStorage.getItem('role') == 'etudiant' ? "My Schedule" : choosingEtudiant.firstname + ' ' + choosingEtudiant.lastname + " Schedule"}
             </h2>
             <div className="bg-white rounded-lg overflow-hidden shadow-md mb-8">
-                <img className="w-full h-auto" src={`${SERVERPOINT}/secure-uploads/plannings/${planning}`} alt="Schedule" />
+                <img className="w-full h-auto" src={`${PLANNING_IMAGES_PATH}${planning}`} alt="Schedule" />
             </div>
         </div>
     )

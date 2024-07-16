@@ -56,6 +56,16 @@ const saveReport = async (id_porf, report_content) => {
                     VALUES (?, ?, CURRENT_DATE)`, [id_porf, report_content])
 }
 
+const getAllProfs = () => {
+    return db.query(`
+        SELECT p.id_professeur, firstname, lastname, num_bureau, planning, COUNT(e.ID_SOUS_MODULE) as nb_sous_modules
+        FROM users u, professeur p, enseigne e
+        WHERE u.ID_USER = p.ID_USER
+        and e.ID_PROFESSEUR = p.ID_PROFESSEUR
+        GROUP BY p.ID_PROFESSEUR;
+    `)
+}
+
 module.exports = { 
     createProfesseur, 
     getProfByUserId, 
@@ -66,5 +76,6 @@ module.exports = {
     addEnseignement,
     removeProfEnseignements,
     getProfEnseignements,
-    saveReport
+    saveReport,
+    getAllProfs
 };
