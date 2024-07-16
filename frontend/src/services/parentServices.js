@@ -76,3 +76,21 @@ export const addParent = async (num_etudiant, id_parent) => {
         throw error;
     }
 }
+
+export const getParents = async () => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.get(SERVERPOINT + '/api/parents/getParents', config);
+        if (response.status === 200) {
+            return response.data.parents;
+        }
+    } catch (error) {
+        throw error;
+    }
+}

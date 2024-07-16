@@ -22,6 +22,8 @@ import ParentProfile from './pages/parentProfile'
 import FilieresGestion from './pages/filieresGestion'
 import FiliereDetails from './pages/filiereDetails'
 import ProfsGestion from './pages/profsGestion'
+import ParentsGestion from './pages/parentsGestion'
+import ReportGestion from './pages/reportGestion'
 
 function App() {
   const client = new QueryClient()
@@ -54,6 +56,8 @@ function App() {
             <Route path='/admin/filieres' element={<Layout><FilieresGestion /></Layout>} />
             <Route path='/admin/filieres/:id_filiere' element={<Layout><FiliereDetails /></Layout>} />
             <Route path='/admin/professeurs' element={<Layout><ProfsGestion /></Layout>} />
+            <Route path='/admin/parents' element={<Layout><ParentsGestion /></Layout>} />
+            <Route path='/admin/reports' element={<Layout><ReportGestion /></Layout>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

@@ -136,7 +136,7 @@ class FiliereController {
 
     async updatePlanning(req, res) {
         const { planning, image, id_filiere, semestre } = req.body;
-        
+
         try {
             let updatedImage = '';
             if (image) {
@@ -152,7 +152,6 @@ class FiliereController {
                     }
                 }
             }
-            console.log(updatedImage)
 
             await Filiere.updatePlanning(updatedImage, id_filiere, semestre)
             return res.status(200).json({ message: "planning updated successfully" });
@@ -165,9 +164,42 @@ class FiliereController {
         try {
             const { id_filiere } = req.params
             const [modules] = await Module.getModulesFiliere(id_filiere);
-            if(modules.length == 0)
+            if (modules.length == 0)
                 return res.status(404).json({ message: "no module found" });
             return res.status(200).json({ modules: modules });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async deleteFiliere(req, res) {
+        try {
+            const { id_filiere } = req.params
+            await Filiere.deleteFiliere(id_filiere)
+            const [semestres] = await Filiere.getFiliereSemestres(id_filiere);
+            for (let i = 0; i < semestres.length; i++) {
+                if (semestres[i].planning) {
+                    const imagePath = path.join(__dirname, '../uploads/plannings', semestres[i].planning);
+                    if (fs.existsSync(imagePath)) {
+                        fs.unlinkSync(imagePath);
+                    }
+                }
+            }
+            await Filiere.deleteFiliereSemestres(id_filiere)
+            return res.status(200).json({ message: "filiere deleted succefully" });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    async addNewFiliere(req, res) {
+        try {
+            const { nom_filiere } = req.body
+            const id_filiere = await Filiere.insertFiliere(nom_filiere)
+            for (let i = 1; i <= 10; i++) {
+                await Filiere.insertSemestre(id_filiere, i);
+            }
+            return res.status(200).json({ message: "filiere added succefully" });
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }

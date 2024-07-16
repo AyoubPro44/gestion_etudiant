@@ -12,5 +12,7 @@ router.post('/updateFiliereName', verifyToken, FiliereController.updateFiliereNa
 router.get('/filiereSemestres/:id_filiere', verifyToken, FiliereController.getFiliereSemestres)
 router.post('/updatePlanning', verifyToken, FiliereController.uploadMiddleware(), FiliereController.updatePlanning);
 router.get('/modulesFiliere/:id_filiere', verifyToken, FiliereController.getModulesFiliere)
+router.delete('/deleteFiliere/:id_filiere', verifyToken, FiliereController.deleteFiliere)
+router.post('/addFiliere', verifyToken, FiliereController.addNewFiliere)
 
 module.exports = router;

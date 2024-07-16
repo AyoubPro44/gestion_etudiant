@@ -21,4 +21,19 @@ const getParentEtudiants = async (id_parent) => {
     `, [id_parent])
 }
 
-module.exports = { createParent, getParentByUserId, getParentEtudiants };
+const getParents = () => {
+    return db.query(`
+        SELECT p.id_parent, u.firstname, u.lastname, u.email, COUNT(e.ID_ETUDIANT) as nb_etudiants
+        FROM parent p
+        JOIN users u ON u.ID_USER = p.ID_USER
+        LEFT JOIN etudiant e ON e.ID_PARENT = p.ID_PARENT
+        GROUP BY p.ID_PARENT;
+    `)
+}
+
+module.exports = { 
+    createParent, 
+    getParentByUserId, 
+    getParentEtudiants,
+    getParents
+};

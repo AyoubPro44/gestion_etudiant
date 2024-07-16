@@ -26,12 +26,6 @@ const SousModulesModal = ({ id_module, nom_module, fetchModulesFiliere }) => {
         }
     }
 
-    const handleUpdate = (index) => {
-        const updatedSousModules = [...sousModules];
-        updatedSousModules[index] = { ...updatedSousModules[index], nom_sous_module: 'Updated Sous-Module' };
-        setSousModules(updatedSousModules);
-    };
-
     const handleRemove = async (id_sous_module) => {
         try {
             await deleteSousModule(id_sous_module)

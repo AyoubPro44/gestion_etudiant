@@ -95,3 +95,28 @@ export const getAllProfs = async () => {
         throw error;
     }
 }
+
+export const updateProfPlanning = async (planning, image, id_prof) => {
+    try {
+        const formData = new FormData();
+        formData.append('id_prof', id_prof);
+        formData.append('planning', planning);
+        formData.append('image', image);
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'multipart/form-data'
+            }
+        };
+
+        const response = await axios.post(`${SERVERPOINT}/api/professeur/updateProfPlanning`, formData, config);
+        if (response.status === 200) {
+            return response.data.message; 
+        } else {
+            throw new Error('Failed to update planning');
+        }
+    } catch (error) {
+        throw error;
+    }
+};

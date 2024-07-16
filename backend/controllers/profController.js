@@ -1,6 +1,24 @@
 const Prof = require('../models/profModel');
 const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+const upload = multer({
+    storage: multer.diskStorage({
+        destination: (req, file, cb) => {
+            cb(null, path.join(__dirname, '../uploads/plannings'));
+        },
+        filename: (req, file, cb) => {
+            cb(null, 'planning_' + Date.now() + path.extname(file.originalname));
+        }
+    }),
+    fileFilter: (req, file, cb) => {
+        cb(null, true);
+    }
+});
+
 
 class ProfController {
     async getCourses(req, res) {
@@ -59,6 +77,36 @@ class ProfController {
         } catch (error) {
             return res.status(500).json({ error: error.message });
         }
+    }
+
+    async updateProfPlanning(req, res) {
+        const { planning, image, id_prof } = req.body;
+        
+        try {
+            let updatedImage = '';
+            if (image) {
+                const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+                const buffer = Buffer.from(base64Data, 'base64');
+                const imageName = 'planning_' + Date.now() + '.jpg';
+                fs.writeFileSync(path.join(__dirname, '../uploads/plannings', imageName), buffer);
+                updatedImage = imageName;
+                if (planning) {
+                    const imagePath = path.join(__dirname, '../uploads/plannings', planning);
+                    if (fs.existsSync(imagePath)) {
+                        fs.unlinkSync(imagePath);
+                    }
+                }
+            }
+
+            await Prof.updateProfPlanning(updatedImage, id_prof);
+            return res.status(200).json({ message: "planning updated successfully" });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+    uploadMiddleware() {
+        return upload.single('image');
     }
 }
 

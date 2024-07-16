@@ -44,6 +44,19 @@ class ParentController {
             return res.status(500).json({ error: error.message });
         }
     }
+
+    async getParents(req, res) {
+        try {
+            console.log('nnnnn')
+            const [parents] = await Parent.getParents()
+            if (parents.length == 0)
+                return res.status(404).json({ message: 'No parent Found' });
+            return res.status(200).json({ parents: parents });
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
+    }
+
 }
 
 module.exports = new ParentController();

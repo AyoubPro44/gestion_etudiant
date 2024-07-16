@@ -152,3 +152,39 @@ export const getModulesFiliere = async (id_filiere) => {
         throw error;
     }
 }
+
+export const deleteFiliere = async (id_filiere) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.delete(SERVERPOINT + '/api/filieres/deleteFiliere/' + id_filiere, config);
+        if (response.status === 200) {
+            return response.data.message;
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+export const addFiliere = async (nom_filiere) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.post(SERVERPOINT + '/api/filieres/addFiliere', { nom_filiere }, config);
+        if (response.status === 200) {
+            return response.data.message;
+        }
+    } catch (error) {
+        throw error;
+    }
+}

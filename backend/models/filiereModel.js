@@ -49,9 +49,22 @@ const getYearModuleNumber = async (id_filiere) => {
 
 const getAllFiliereInfos = () => {
   return db.query(`
-    SELECT f.id_filiere, f.nom_filiere, COUNT(DISTINCT m.id_module) as nb_modules, COUNT(DISTINCT sm.id_sous_module) as nb_sous_modules, COUNT(DISTINCT e.ID_ETUDIANT) as nb_etudiants FROM filiere f, module m, sous_module sm, etudiant e
-    WHERE f.ID_FILIERE = m.ID_FILIERE and m.ID_MODULE = sm.ID_MODULE and f.ID_FILIERE = e.ID_FILIERE
-    GROUP BY f.ID_FILIERE;
+    SELECT
+      f.id_filiere,
+      f.nom_filiere,
+      COUNT(DISTINCT m.id_module) AS nb_modules,
+      COUNT(DISTINCT sm.id_sous_module) AS nb_sous_modules,
+      COUNT(DISTINCT e.ID_ETUDIANT) AS nb_etudiants
+    FROM
+      filiere f
+    LEFT JOIN
+      module m ON f.ID_FILIERE = m.ID_FILIERE
+    LEFT JOIN
+      sous_module sm ON m.ID_MODULE = sm.ID_MODULE
+    LEFT JOIN
+      etudiant e ON f.ID_FILIERE = e.ID_FILIERE
+    GROUP BY
+      f.ID_FILIERE;
   `);
 }
 
@@ -59,7 +72,7 @@ const updateFiliereName = (nom_filiere, id_filiere) => {
   return db.query(`UPDATE filiere SET nom_filiere = ? WHERE id_filiere = ?`, [nom_filiere, id_filiere])
 }
 
-const getFiliereSemestres = (id_filiere) => {
+const getFiliereSemestres = async (id_filiere) => {
   return db.query(`
     SELECT 
       sp.id_planning, 
@@ -82,8 +95,26 @@ const getFiliereSemestres = (id_filiere) => {
 const updatePlanning = (planning, id_filiere, semestre) => {
   return db.query(`
       UPDATE semestre_planning SET planning = ? WHERE id_filiere = ? and semestre = ?
-      `,[planning, id_filiere, semestre]);
+      `, [planning, id_filiere, semestre]);
 }
+
+const deleteFiliere = (id_filiere) => {
+  return db.query(`DELETE FROM filiere WHERE id_filiere = ?`, [id_filiere])
+}
+
+const deleteFiliereSemestres = async (id_filiere) => {
+  return db.query(`delete from semestre_planning WHERE id_filiere = ?`, [id_filiere]);
+}
+
+const insertFiliere = async (nom_filiere) => {
+  const result = await db.query(`insert into filiere (nom_filiere) VALUES (?)`, [nom_filiere])
+  return result[0].insertId
+}
+
+const insertSemestre = (id_filiere, semestre) => {
+  return db.query(`INSERT INTO semestre_planning (id_filiere, semestre, planning) VALUES (?, ?, NULL)`, [id_filiere, semestre])
+}
+
 
 module.exports = {
   getAllFiliere,
@@ -94,5 +125,9 @@ module.exports = {
   getAllFiliereInfos,
   getFiliereSemestres,
   updatePlanning,
-  getPlanningName
+  getPlanningName,
+  deleteFiliere,
+  insertFiliere,
+  insertSemestre,
+  deleteFiliereSemestres
 };

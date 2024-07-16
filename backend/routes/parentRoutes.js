@@ -7,5 +7,6 @@ router.post('/parentEtudiants', verifyToken, ParentController.getAllParentEtudia
 router.post('/updateParentInfos', verifyToken, ParentController.updateParentInfos);
 router.post('/removeParent', verifyToken, ParentController.removeParent);
 router.post('/addParent', verifyToken, ParentController.addParent);
+router.get('/getParents', verifyToken, ParentController.getParents);
 
 module.exports = router;

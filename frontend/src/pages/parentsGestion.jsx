@@ -13,48 +13,38 @@ import {
     DropdownMenu,
     DropdownItem,
     Pagination,
-    useDisclosure
+    useDisclosure,
+    Modal,
 } from "@nextui-org/react";
 import { FaSearch, FaChevronDown } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
 import { logout } from "../services/authentification";
-import { getAllProfs } from "../services/profServices";
-import PlanningModal from "../components/gestionFilieres/planningModal";
-import EditPlanningProfModal from "../components/gestionProfesseurs/editPlanningProfModal";
-import ProfSousModulesModal from "../components/gestionProfesseurs/profSousModulesModal";
+import { getParents } from "../services/parentServices";
+import { FaEye } from "react-icons/fa";
+import ParentEtudiantsModal from "../components/gestionParents/parentEtudiantsModal";
 
 const columns = [
     { name: "First Name", uid: "firstname", sortable: true },
     { name: "Last Name", uid: "lastname", sortable: true },
-    { name: "Office Number", uid: "num_bureau", sortable: true },
-    { name: "Number of Sub-Modules", uid: "nb_sous_modules", sortable: true },
-    { name: "Planning", uid: "planning" },
+    { name: "Email", uid: "email", sortable: true },
+    { name: "Number of Students", uid: "nb_etudiants", sortable: true },
+    { name: "Actions", uid: "actions", sortable: false }, // New action column
 ];
 
-const INITIAL_VISIBLE_COLUMNS = ["firstname", "lastname", "num_bureau", "nb_sous_modules", "planning"];
-
-const headers = [
-    { label: 'First Name', key: 'firstname' },
-    { label: 'Last Name', key: 'lastname' },
-    { label: 'Office Number', key: 'num_bureau' },
-    { label: 'Number of Sub-Modules', key: 'nb_sous_modules' },
-    { label: 'Planning', key: 'planning' },
-];
+const INITIAL_VISIBLE_COLUMNS = ["firstname", "lastname", "email", "nb_etudiants", "actions"]; // Include actions in initial visible columns
 
 const csvHeaders = [
     { label: 'First Name', key: 'firstname' },
     { label: 'Last Name', key: 'lastname' },
-    { label: 'Office Number', key: 'num_bureau' },
-    { label: 'Number of Sub-Modules', key: 'nb_sous_modules' },
+    { label: 'Email', key: 'email' },
+    { label: 'Number of Students', key: 'nb_etudiants' },
 ];
 
-export default function ProfsGestion() {
+export default function ParentsGestion() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const [filterValue, setFilterValue] = React.useState("");
-    const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
-    const [selectedProfesseurs, setSelectedProfesseurs] = React.useState([]);
     const [visibleColumns, setVisibleColumns] = React.useState(new Set(INITIAL_VISIBLE_COLUMNS));
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
     const [sortDescriptor, setSortDescriptor] = React.useState({
@@ -62,22 +52,26 @@ export default function ProfsGestion() {
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
-    const [professeurs, setProfesseurs] = useState([])
-
+    const [selectedParent, setSelectedParent] = useState(null); // State to store selected parent
+    const [parents, setParents] = useState([]);
     const navigate = useNavigate();
+
     useEffect(() => {
         if (!localStorage.getItem('auth') || localStorage.getItem('role') !== "admin") {
             logout();
             navigate('/');
+        } else {
+            fetchParents();
         }
-        else
-            fetchProfesseurs()
     }, []);
 
-    const fetchProfesseurs = async () => {
-        await getAllProfs()
-            .then((response) => setProfesseurs(response))
-            .catch((response) => console.error(response))
+    const fetchParents = async () => {
+        try {
+            const response = await getParents();
+            setParents(response);
+        } catch (error) {
+            console.error(error);
+        }
     }
 
     const hasSearchFilter = Boolean(filterValue);
@@ -88,17 +82,18 @@ export default function ProfsGestion() {
     }, [visibleColumns]);
 
     const filteredItems = React.useMemo(() => {
-        let filteredProfesseurs = professeurs;
+        let filteredParents = parents;
 
         if (hasSearchFilter) {
-            filteredProfesseurs = filteredProfesseurs.filter((professeur) =>
-                professeur.firstname.toLowerCase().includes(filterValue.toLowerCase()) ||
-                professeur.lastname.toLowerCase().includes(filterValue.toLowerCase())
+            filteredParents = filteredParents.filter((parent) =>
+                parent.firstname.toLowerCase().includes(filterValue.toLowerCase()) ||
+                parent.lastname.toLowerCase().includes(filterValue.toLowerCase()) ||
+                parent.email.toLowerCase().includes(filterValue.toLowerCase())
             );
         }
 
-        return filteredProfesseurs;
-    }, [professeurs, filterValue]);
+        return filteredParents;
+    }, [parents, filterValue]);
 
     const pages = Math.ceil(filteredItems.length / rowsPerPage);
 
@@ -117,10 +112,16 @@ export default function ProfsGestion() {
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((professeur, columnKey) => {
-        const cellValue = professeur[columnKey];
+    const renderCell = React.useCallback((parent, columnKey) => {
+        const cellValue = parent[columnKey];
+        if (columnKey === "actions") {
+            return (
+                <ParentEtudiantsModal id_parent={parent.id_parent} firstname={parent.firstname} lastname={parent.lastname} />
+            );
+        }
+
         return cellValue;
-    }, []);
+    }, [onOpen]);
 
     const onNextPage = React.useCallback(() => {
         if (page < pages) {
@@ -153,6 +154,7 @@ export default function ProfsGestion() {
         setPage(1);
     }, []);
 
+    
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
@@ -160,7 +162,7 @@ export default function ProfsGestion() {
                     <Input
                         isClearable
                         className="w-full sm:max-w-[44%]"
-                        placeholder="Search by name..."
+                        placeholder="Search by name or email..."
                         startContent={<FaSearch />}
                         value={filterValue}
                         onClear={onClear}
@@ -177,7 +179,6 @@ export default function ProfsGestion() {
                                 disallowEmptySelection
                                 aria-label="Table Columns"
                                 closeOnSelect={false}
-                                selectedKeys={visibleColumns}
                                 selectionMode="multiple"
                                 onSelectionChange={setVisibleColumns}
                             >
@@ -189,9 +190,9 @@ export default function ProfsGestion() {
                             </DropdownMenu>
                         </Dropdown>
                         <CSVLink
-                            data={professeurs}
+                            data={parents}
                             headers={csvHeaders}
-                            filename={"professeurs.csv"}
+                            filename={"parents.csv"}
                             className="flex items-center gap-2 btn btn-primary"
                         >
                             <Button color="primary" endContent={<LuDownload />}>
@@ -201,7 +202,7 @@ export default function ProfsGestion() {
                     </div>
                 </div>
                 <div className="flex justify-between items-center">
-                    <span className="text-default-400 text-small">Total {professeurs?.length} professeurs</span>
+                    <span className="text-default-400 text-small">Total {parents?.length} parents</span>
                     <label className="flex items-center text-default-400 text-small">
                         Rows per page:
                         <select
@@ -220,10 +221,38 @@ export default function ProfsGestion() {
         filterValue,
         visibleColumns,
         onRowsPerPageChange,
-        professeurs?.length,
+        parents?.length,
         onSearchChange,
         hasSearchFilter,
     ]);
+
+
+    const closeModal = () => {
+        onClose();
+        setSelectedParent(null); // Reset selected parent when modal is closed
+    };
+
+    const modalContent = selectedParent && (
+        <Modal
+            isOpen={isOpen}
+            onClose={closeModal}
+            hideOverlay={false}
+            aria-labelledby="modal-title"
+            aria-describedby="modal-description"
+            width="500px"
+        >
+            <Modal.Header>Title of Modal</Modal.Header>
+            <Modal.Content>
+                <p>First Name: {selectedParent.firstname}</p>
+                <p>Last Name: {selectedParent.lastname}</p>
+                <p>Email: {selectedParent.email}</p>
+                <p>Number of Students: {selectedParent.nb_etudiants}</p>
+            </Modal.Content>
+            <Modal.Action passive onClick={closeModal}>
+                Close
+            </Modal.Action>
+        </Modal>
+    );
 
     const bottomContent = React.useMemo(() => {
         return (
@@ -247,11 +276,12 @@ export default function ProfsGestion() {
                 </div>
             </div>
         );
-    }, [selectedKeys, items.length, page, pages, hasSearchFilter]);
+    }, [items.length, page, pages, hasSearchFilter]);
 
     return (
-        <div className="py-12 px-4 h-full">
+        <div className="py-12 px-12 h-full">
             <div className="container mx-auto px-4">
+                {modalContent}
                 <Table
                     aria-label="Example table with custom cells, pagination and sorting"
                     isHeaderSticky
@@ -261,7 +291,6 @@ export default function ProfsGestion() {
                     topContentPlacement="outside"
                     bottomContentPlacement="outside"
                     onSortChange={setSortDescriptor}
-                    onSelectionChange={setSelectedKeys}
                 >
                     <TableHeader columns={headerColumns}>
                         {(column) => (
@@ -275,30 +304,13 @@ export default function ProfsGestion() {
                         )}
                     </TableHeader>
                     <TableBody items={sortedItems}>
-                        {(professeur) => (
-                            <TableRow key={professeur.id_professeur}>
-
-                                {(columnKey) => {
-                                    return (
-                                        columnKey == 'planning'
-                                            ? <TableCell className="flex flex-row gap-4">
-                                                <PlanningModal planning={professeur.planning} />
-                                                <EditPlanningProfModal id_prof={professeur.id_professeur} planning={professeur.planning} fetchProfesseurs={fetchProfesseurs} />
-                                            </TableCell>
-                                            : columnKey == 'nb_sous_modules'
-                                                ? <TableCell>
-                                                    <div className="flex flex-row gap-4">
-                                                        {renderCell(professeur, columnKey)}
-                                                        <ProfSousModulesModal id_prof={professeur.id_professeur} firstname={professeur.firstname} lastname={professeur.lastname} />
-                                                    </div>
-                                                </TableCell>
-                                                : <TableCell>
-                                                    {renderCell(professeur, columnKey)}
-                                                </TableCell>
-
-
-                                    );
-                                }}
+                        {(parent) => (
+                            <TableRow key={parent.id_parent}>
+                                {(columnKey) => (
+                                    <TableCell>
+                                        {renderCell(parent, columnKey)}
+                                    </TableCell>
+                                )}
                             </TableRow>
                         )}
                     </TableBody>
