@@ -21,6 +21,7 @@ import { logout } from '../services/authentification';
 import useLocalStorage from '../hooks/useLocalStorage'
 import { User } from "@nextui-org/react";
 import { PiStudentBold } from "react-icons/pi";
+import chatbot from "../assets/images/chatbot.png"
 
 const profLinks = [
   { to: "/professeur/planning", icon: <FaCalendarAlt className="mr-4" />, label: "My Planning" },
@@ -135,6 +136,15 @@ const SideBar = () => {
             </Link>
           </div>
         ))}
+        <Link
+          key="/chatBot"
+          to="/chatBot"
+          className={`p-2 text-gray-700 hover:bg-gray-100 transition duration-200 rounded-md flex items-center ${location.pathname === "/chatBot" ? "bg-gray-100 text-indigo-500" : ""}`}
+        >
+          <img src={chatbot} alt="Chatbot Icon" className="w-6 h-6 mr-4" />
+
+          <span>Chat Bot</span>
+        </Link>
         <span
           onClick={logoutFromPage}
           className="p-2 cursor-pointer text-red-500 hover:text-red-600 hover:bg-gray-100 transition duration-200 rounded-md flex items-center"

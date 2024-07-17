@@ -27,6 +27,7 @@ import ReportGestion from './pages/reportGestion'
 import FilieresPage from './components/gestionEtudiants/filieresPage'
 import SemestresPage from './components/gestionEtudiants/semestresPage'
 import AdminProfile from './pages/adminProfile'
+import ChatBotPage from './pages/chatBotPage'
 
 function App() {
   const client = new QueryClient()
@@ -65,6 +66,7 @@ function App() {
             <Route path='/admin/etudiants/semestres/:id_filiere' element={<Layout><SemestresPage /></Layout>} />
             <Route path='/etudiants/list/:id_filiere/:semestre' element={<Layout><EtudiantList /></Layout>} />
             <Route path='/admin/profile' element={<Layout><AdminProfile /></Layout>} />
+            <Route path='/chatBot' element={<Layout><ChatBotPage /></Layout>} />
             <Route path='*' element={<NotFoundPage />} />
           </Routes>
         </BrowserRouter>

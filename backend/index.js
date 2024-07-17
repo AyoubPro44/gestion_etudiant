@@ -11,6 +11,7 @@ const postRoutes = require('./routes/postRoutes');
 const parentRoutes = require('./routes/parentRoutes');
 const moduleRoutes = require('./routes/moduleRoutes');
 const reportRoutes = require('./routes/reportRoutes');
+const chatBotRoutes = require('./routes/chatBotRoutes');
 const verifyToken = require('./middlewares/verifyToken'); 
 const bodyParser = require('body-parser');
 
@@ -36,6 +37,7 @@ app.use('/api/posts', postRoutes);
 app.use('/api/parents', parentRoutes);
 app.use('/api/modules', moduleRoutes);
 app.use('/api/reports', reportRoutes);
+app.use('/api/chatBot', chatBotRoutes);
 
 const PORT = process.env.PORT || 5000;
 
