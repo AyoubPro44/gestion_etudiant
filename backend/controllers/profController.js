@@ -1,5 +1,6 @@
 const Prof = require('../models/profModel');
 const User = require('../models/userModel');
+const Report = require('../models/reportModel');
 const jwt = require('jsonwebtoken');
 const multer = require('multer');
 const path = require('path');
@@ -61,7 +62,7 @@ class ProfController {
     async insertReport(req, res) {
         try {
             const { id_prof, report_content } = req.body
-            await Prof.saveReport(id_prof, report_content)
+            await Report.saveReport(id_prof, report_content)
             return res.status(200).json({ message: 'report saved successfully' })
         } catch (error) {
             return res.status(500).json({ error: error.message });

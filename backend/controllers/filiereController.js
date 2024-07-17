@@ -205,6 +205,20 @@ class FiliereController {
         }
     }
 
+    async getSemestresNbEtudiants(req, res) {
+        try {
+            const { id_filiere } = req.params
+            const [semestres] = await Filiere.getFiliereSemestresNbEtudiants(id_filiere)
+            console.log(id_filiere)
+            if(semestres.length == 0)
+                return res.status(404).json({ message: "aucun semestre with etudiants found found"})
+            return res.status(200).json({ semestres: semestres });
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+
+
     uploadMiddleware() {
         return upload.single('image');
     }

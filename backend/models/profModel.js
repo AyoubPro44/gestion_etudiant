@@ -52,11 +52,6 @@ const getProfEnseignements = async (id_prof) => {
     return db.query(`SELECT id_sous_module FROM enseigne WHERE id_professeur = ?`, [id_prof]);
 }
 
-const saveReport = async (id_porf, report_content) => {
-    return db.query(`INSERT INTO report (ID_PROFESSEUR, report_content, date_report)
-                    VALUES (?, ?, NOW())`, [id_porf, report_content])
-}
-
 const getAllProfs = () => {
     return db.query(`
         SELECT p.id_professeur, firstname, lastname, num_bureau, planning, COUNT(e.ID_SOUS_MODULE) as nb_sous_modules
@@ -83,7 +78,6 @@ module.exports = {
     addEnseignement,
     removeProfEnseignements,
     getProfEnseignements,
-    saveReport,
     getAllProfs,
     updateProfPlanning
 };

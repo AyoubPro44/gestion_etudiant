@@ -131,6 +131,16 @@ class UserController {
       return res.status(500).json({ error: 'Failed to create user' });
     }
   }
+
+  async updateUserInfos(req, res) {
+    try {
+      const { user } = req.body;
+      await User.updateInfos(user.id_user, user.firstname, user.lastname, user.email);
+      return res.status(200).json({ message: "User informations updated successfuly" })
+    } catch (error) {
+      return res.status(500).json({ error: error.message });
+    }
+  }
 }
 
 module.exports = new UserController();

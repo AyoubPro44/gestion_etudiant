@@ -50,7 +50,7 @@ const adminLinks = [
   { to: "/admin/professeurs", icon: <FaChalkboardTeacher className="mr-4" />, label: "Professeurs" },
   { to: "/admin/parents", icon: <FaUserFriends className="mr-4" />, label: "Parents" },
   { to: "/admin/reports", icon: <FaFileAlt className="mr-4" />, label: "Reports" },
-  { to: "/admin/etudiants", icon: <FaUserGraduate className="mr-4" />, label: "Etudiants" },
+  { to: "/admin/etudiants/filieres", icon: <FaUserGraduate className="mr-4" />, label: "Etudiants" },
   { to: "/admin/profile", icon: <FaUserCircle className="mr-4" />, label: "Profile" },
 ];
 

@@ -14,5 +14,6 @@ router.post('/updatePlanning', verifyToken, FiliereController.uploadMiddleware()
 router.get('/modulesFiliere/:id_filiere', verifyToken, FiliereController.getModulesFiliere)
 router.delete('/deleteFiliere/:id_filiere', verifyToken, FiliereController.deleteFiliere)
 router.post('/addFiliere', verifyToken, FiliereController.addNewFiliere)
+router.get('/semestresNbEtudiants/:id_filiere', verifyToken, FiliereController.getSemestresNbEtudiants)
 
 module.exports = router;

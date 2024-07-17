@@ -11,7 +11,7 @@ import ChangePasswordForm from '../components/changePasswordForm';
 import { formatDate } from '../services/functions'
 import { updateEtudiantInfos } from '../services/etudiantServices';
 
-function ProfProfile() {
+function EtudiantProfile() {
     const navigate = useNavigate();
 
     const validationSchema = Yup.object().shape({
@@ -173,4 +173,4 @@ function ProfProfile() {
     );
 }
 
-export default ProfProfile;
+export default EtudiantProfile;

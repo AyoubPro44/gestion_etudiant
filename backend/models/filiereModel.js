@@ -115,6 +115,15 @@ const insertSemestre = (id_filiere, semestre) => {
   return db.query(`INSERT INTO semestre_planning (id_filiere, semestre, planning) VALUES (?, ?, NULL)`, [id_filiere, semestre])
 }
 
+const getFiliereSemestresNbEtudiants = async (id_filiere) => {
+  return db.query(`
+    SELECT semestre, COUNT(*) as nb_etudiants
+    FROM etudiant
+    WHERE ID_FILIERE = ?
+    GROUP BY semestre
+    ORDER BY semestre
+  `, [id_filiere])
+}
 
 module.exports = {
   getAllFiliere,
@@ -129,5 +138,6 @@ module.exports = {
   deleteFiliere,
   insertFiliere,
   insertSemestre,
-  deleteFiliereSemestres
+  deleteFiliereSemestres,
+  getFiliereSemestresNbEtudiants
 };

@@ -188,3 +188,21 @@ export const addFiliere = async (nom_filiere) => {
         throw error;
     }
 }
+
+export const getSemestresNbEtudiants = async (id_filiere) => {
+    try {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem('token')}`,
+                'Content-Type': 'application/json'
+            },
+            withCredentials: true,
+        };
+        const response = await axios.get(SERVERPOINT + '/api/filieres/semestresNbEtudiants/' + id_filiere, config);
+        if (response.status === 200) {
+            return response.data.semestres;
+        }
+    } catch (error) {
+        throw error;
+    }
+}

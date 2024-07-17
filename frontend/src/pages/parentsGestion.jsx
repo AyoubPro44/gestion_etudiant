@@ -16,7 +16,7 @@ import {
     useDisclosure,
     Modal,
 } from "@nextui-org/react";
-import { FaSearch, FaChevronDown } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaUserFriends } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
@@ -154,10 +154,14 @@ export default function ParentsGestion() {
         setPage(1);
     }, []);
 
-    
+
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center mb-6">
+                    <FaUserFriends className="mr-4 text-indigo-500" />
+                    Parents
+                </h2>
                 <div className="flex justify-between gap-3 items-end">
                     <Input
                         isClearable
@@ -279,7 +283,7 @@ export default function ParentsGestion() {
     }, [items.length, page, pages, hasSearchFilter]);
 
     return (
-        <div className="py-12 px-12 h-full">
+        <div className="py-12 px-8 h-full">
             <div className="container mx-auto px-4">
                 {modalContent}
                 <Table

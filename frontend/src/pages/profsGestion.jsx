@@ -15,7 +15,7 @@ import {
     Pagination,
     useDisclosure
 } from "@nextui-org/react";
-import { FaSearch, FaChevronDown } from "react-icons/fa";
+import { FaSearch, FaChevronDown, FaChalkboardTeacher } from "react-icons/fa";
 import { LuDownload } from "react-icons/lu";
 import { useNavigate } from 'react-router-dom';
 import { CSVLink } from 'react-csv';
@@ -156,6 +156,10 @@ export default function ProfsGestion() {
     const topContent = React.useMemo(() => {
         return (
             <div className="flex flex-col gap-4">
+                <h2 className="text-2xl font-bold text-gray-800 flex items-center mb-6">
+                    <FaChalkboardTeacher className="mr-4 text-indigo-500" />
+                    Professeurs
+                </h2>
                 <div className="flex justify-between gap-3 items-end">
                     <Input
                         isClearable

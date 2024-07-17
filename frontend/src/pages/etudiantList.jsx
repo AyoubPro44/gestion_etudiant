@@ -59,7 +59,8 @@ export default function EtudiantList() {
 
     const navigate = useNavigate()
     useEffect(() => {
-        if (!localStorage.getItem('auth') || localStorage.getItem('role') != "professeur") {
+        const role = localStorage.getItem('role');
+        if (!localStorage.getItem('auth') || (role != "professeur" && role != "admin")) {
             logout();
             navigate('/');
         }
